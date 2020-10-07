@@ -240,7 +240,7 @@ public protocol SudoKeyManager {
     /// Creates a symmetric key from the specified password.
     ///
     /// - Parameters:
-    ///   - password: Password.
+    ///   - password: Password as String. Password will be UTF-8 encoded to Data before applying key derivation function.
     ///   - salt: Salt to use for generating the key.
     ///   - rounds: Number of rounds of the pseudo random algorithm to use.
     ///
@@ -248,6 +248,18 @@ public protocol SudoKeyManager {
     /// - Throws:
     ///     `SudoKeyManagerError.fatalError`
     func createSymmetricKeyFromPassword(_ password: String, salt: Data, rounds: UInt32) throws -> Data
+
+    /// Creates a symmetric key from the specified password.
+    ///
+    /// - Parameters:
+    ///   - password: Password as Data.
+    ///   - salt: Salt to use for generating the key.
+    ///   - rounds: Number of rounds of the pseudo random algorithm to use.
+    ///
+    /// - Returns: Key data.
+    /// - Throws:
+    ///     `SudoKeyManagerError.fatalError`
+    func createSymmetricKeyFromPassword(_ password: Data, salt: Data, rounds: UInt32) throws -> Data
     
     /// Creates a SHA256 hash of the specified data.
     ///
@@ -507,6 +519,14 @@ public extension SudoKeyManager {
     
     func decryptWithPrivateKey(_ name: String, data: Data) throws -> Data {
         return try decryptWithPrivateKey(name, data: data, algorithm: .rsaEncryptionPKCS1)
+    }
+
+    func createSymmetricKeyFromPassword(_ password: String, salt: Data, rounds: UInt32) throws -> Data {
+        guard let passwordData = password.data(using: String.Encoding.utf8) else {
+            throw SudoKeyManagerError.fatalError
+        }
+
+        return try createSymmetricKeyFromPassword(passwordData, salt: salt, rounds: rounds)
     }
     
 }
@@ -1309,14 +1329,10 @@ extension SudoKeyManagerImpl: SudoKeyManager {
         return (keyData, salt, rounds)
     }
     
-    public func createSymmetricKeyFromPassword(_ password: String, salt: Data, rounds: UInt32) throws -> Data {
-        guard let passwordData = password.data(using: String.Encoding.utf8) else {
-            throw SudoKeyManagerError.fatalError
-        }
-        
+    public func createSymmetricKeyFromPassword(_ password: Data, salt: Data, rounds: UInt32) throws -> Data {
         var data = [UInt8](repeating: 0,  count: self.keySizeAES >> 3)
         // Derive a cryptographic key from the password, salt and required rounds of pseudo random function applied.
-        let status: CCCryptorStatus = try passwordData.withUnsafeBytes {
+        let status: CCCryptorStatus = try password.withUnsafeBytes {
             guard let passwordBytes = $0.baseAddress?.assumingMemoryBound(to: Int8.self) else {
                 throw SudoKeyManagerError.fatalError
             }
@@ -1327,7 +1343,7 @@ extension SudoKeyManagerImpl: SudoKeyManager {
 
                 return CCKeyDerivationPBKDF(CCPBKDFAlgorithm(kCCPBKDF2),
                                      passwordBytes,
-                                     passwordData.count,
+                                     password.count,
                                      saltBytes,
                                      salt.count,
                                      CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256),
