@@ -36,7 +36,6 @@ public enum SecureKeyArchiveAttribute: String {
     case keys = "Keys"
     case salt = "Salt"
     case rounds = "Rounds"
-    case iv = "IV"
     case metaInfo = "MetaInfo"
 }
 
@@ -142,8 +141,6 @@ public class SecureKeyArchiveImpl {
         static let version = 2
         
     }
-    
-    public fileprivate(set) var iv: Data?
     
     public var excludedKeys: [String] = []
     
@@ -275,15 +272,7 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             self.archiveDictionary[.salt] = salt.base64EncodedString() as AnyObject
             self.archiveDictionary[.rounds] = NSNumber(value: rounds as UInt32)
             
-            var ivData: Data!
-            if iv == nil {
-                ivData = try self.keyManager.createIV()
-                self.archiveDictionary[.iv] = ivData.base64EncodedString() as AnyObject
-            } else {
-                ivData = iv
-            }
-            
-            let encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data, iv: ivData)
+            let encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data)
             
             self.archiveDictionary[.keys] = encryptedData.base64EncodedString() as AnyObject
         } catch {
@@ -323,28 +312,7 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         do {
             let key = try self.keyManager.createSymmetricKeyFromPassword(password, salt: salt, rounds: UInt32(rounds.uintValue))
             
-            // This for backward compatibility as older versions of archive do not have IV.
-            var iv = Data(count: 16)
-            if let ivStr = archiveDictionary[.iv] as? String,
-                let ivData = Data(base64Encoded: ivStr) {
-                iv = ivData
-            }
-            
-            self.iv = iv
-            
-            data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData, iv: iv)
-            
-            // This is workaround for an iOS API issue that seems to creating non zeroed byte array despite of
-            // being asked to do so. Only happens on some devices.
-            if data?.toJSONObject() == nil {
-                self.logger.log(.error, message: "Decrypted key set invalid. IV: \(iv.toHexString())")
-                
-                iv = Data(count: 16)
-                iv[0] = 0x10
-                iv[4] = 0x01
-                self.iv = iv
-                data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData, iv: iv)
-            }
+            data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData)
         } catch {
             self.logger.log(.error, message: "Failed to decrypt the key archive: \(error)")
             throw SecureKeyArchiveError.fatalError
