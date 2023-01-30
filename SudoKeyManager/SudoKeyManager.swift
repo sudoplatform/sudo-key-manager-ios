@@ -336,6 +336,15 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
     ///     `SudoKeyManagerError.fatalError`
     func getPrivateKey(_ name: String) throws -> Data?
+    
+    /// Deletes a private key from the secure store.
+    ///
+    /// - Parameter name: Name of the private key to be deleted.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.fatalError`
+    func deletePrivateKey(_ name: String) throws
 
     /// Adds a public key to the secure store.
     ///
@@ -372,6 +381,15 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
     ///     `SudoKeyManagerError.fatalError`
     func getPublicKey(_ name: String) throws -> Data?
+    
+    /// Deletes a public key from the secure store.
+    ///
+    /// - Parameter name: Name of the public key to be deleted.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.fatalError`
+    func deletePublicKey(_ name: String) throws
     
     /// Deletes a key pair from the secure store.
     ///

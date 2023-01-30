@@ -965,6 +965,11 @@ extension LegacySudoKeyManager: SudoKeyManager {
         return try getKeyData(createKeySearchDictionary(name, type: .privateKey))
     }
     
+    public func deletePrivateKey(_ name: String) throws {
+        let dictionary = try createKeySearchDictionary(name, type: .privateKey)
+        try deleteKeys(dictionary)
+    }
+    
     public func addPublicKey(_ key: Data, name: String) throws {
         try self.addPublicKey(key, name: name, isExportable: true)
     }
@@ -1005,6 +1010,11 @@ extension LegacySudoKeyManager: SudoKeyManager {
     
     public func getPublicKey(_ name: String) throws -> Data? {
         return try getKeyData(createKeySearchDictionary(name, type: .publicKey))
+    }
+    
+    public func deletePublicKey(_ name: String) throws {
+        let dictionary = try createKeySearchDictionary(name, type: .publicKey)
+        try deleteKeys(dictionary)
     }
     
     public func deleteKeyPair(_ name: String) throws {
