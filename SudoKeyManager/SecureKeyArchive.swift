@@ -33,10 +33,17 @@ public enum SecureKeyArchiveError : Error {
 /// List of key archive attributes.
 public enum SecureKeyArchiveAttribute: String {
     case version = "Version"
+    case type = "Type"
     case keys = "Keys"
     case salt = "Salt"
     case rounds = "Rounds"
     case metaInfo = "MetaInfo"
+}
+
+/// List of archive types.
+public enum SecureKeyArchiveType: String {
+    case secure = "Secure"
+    case insecure = "Insecure"
 }
 
 /// Protocol encapsulating a set of methods required for creating and
@@ -72,24 +79,24 @@ public protocol SecureKeyArchive {
     
     /// Archives and encrypts the keys loaded into this archive.
     ///
-    /// - Parameter password: Password to use to encrypt the archive.
+    /// - Parameter password: Password to use to encrypt the archive. If nil no encryption is performed.
     ///
     /// - Throws:
     ///     `SecureKeyArchiveError.invalidPassword`
     ///     `SecureKeyArchiveError.archiveEmpty`
     ///     `SecureKeyArchiveError.fatalError`
-    func archive(_ password: String) throws -> Data
+    func archive(_ password: String?) throws -> Data
     
     /// Decrypts and unarchives the keys in this archive.
     ///
-    /// - Parameter password: Password to use to decrypt the archive.
+    /// - Parameter password: Password to use to decrypt the archive. If nil no decryption is performed.
     ///
     /// - Throws:
     ///     `SecureKeyArchiveError.invalidPassword`
     ///     `SecureKeyArchiveError.archiveEmpty`
     ///     `SecureKeyArchiveError.invalidArchiveData`
     ///     `SecureKeyArchiveError.fatalError`
-    func unarchive(_ password: String) throws
+    func unarchive(_ password: String?) throws
     
     /// Resets the archive by clearing loaded keys and archive data.
     func reset()
@@ -242,19 +249,15 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         }
     }
     
-    public func archive(_ password: String) throws -> Data {
+    public func archive(_ password: String?) throws -> Data {
         return try self.archive(password, iv: nil)
     }
     
-    public func archive(_ password: String, iv: Data?) throws -> Data {
+    public func archive(_ password: String?, iv: Data?) throws -> Data {
         guard self.keys.count > 0 else {
             throw SecureKeyArchiveError.archiveEmpty
         }
         
-        guard !password.isEmpty else {
-            throw SecureKeyArchiveError.invalidPassword
-        }
-
         self.archiveDictionary = [.version: self.version as AnyObject, .metaInfo: self.metaInfo as AnyObject]
         
         // Convert Enum keys to String keys satisfy the requirements for JSON serializer.
@@ -267,17 +270,27 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             throw SecureKeyArchiveError.fatalError
         }
         
-        do {
-            let (key, salt, rounds) = try self.keyManager.createSymmetricKeyFromPassword(password)
-            self.archiveDictionary[.salt] = salt.base64EncodedString() as AnyObject
-            self.archiveDictionary[.rounds] = NSNumber(value: rounds as UInt32)
-            
-            let encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data)
-            
-            self.archiveDictionary[.keys] = encryptedData.base64EncodedString() as AnyObject
-        } catch {
-            self.logger.log(.error, message: "Failed to encrypted the key archive: \(error)")
-            throw SecureKeyArchiveError.fatalError
+        if let password = password {
+            guard !password.isEmpty else {
+                throw SecureKeyArchiveError.invalidPassword
+            }
+
+            do {
+                let (key, salt, rounds) = try self.keyManager.createSymmetricKeyFromPassword(password)
+                self.archiveDictionary[.type] = SecureKeyArchiveType.secure.rawValue as AnyObject
+                self.archiveDictionary[.salt] = salt.base64EncodedString() as AnyObject
+                self.archiveDictionary[.rounds] = NSNumber(value: rounds as UInt32)
+                
+                let encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data)
+                
+                self.archiveDictionary[.keys] = encryptedData.base64EncodedString() as AnyObject
+            } catch {
+                self.logger.log(.error, message: "Failed to encrypted the key archive: \(error)")
+                throw SecureKeyArchiveError.fatalError
+            }
+        } else {
+            self.archiveDictionary[.type] = SecureKeyArchiveType.insecure.rawValue as AnyObject
+            self.archiveDictionary[.keys] = data.base64EncodedString() as AnyObject
         }
         
         // Convert Enum keys to String keys satisfy the requirements for JSON serializer.
@@ -288,15 +301,8 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         return archiveData
     }
     
-    public func unarchive(_ password: String) throws {
-        guard !password.isEmpty else {
-            throw SecureKeyArchiveError.invalidPassword
-        }
-        
+    public func unarchive(_ password: String?) throws {
         guard let version = self.archiveDictionary[.version] as? Int,
-            let saltStr = self.archiveDictionary[.salt] as? String,
-            let salt = Data(base64Encoded: saltStr),
-            let rounds = self.archiveDictionary[.rounds] as? NSNumber,
             let keysStr = self.archiveDictionary[.keys] as? String,
             let keysData = Data(base64Encoded: keysStr) else {
             throw SecureKeyArchiveError.invalidArchiveData
@@ -309,13 +315,28 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         self.version = version
         
         var data: Data?
-        do {
-            let key = try self.keyManager.createSymmetricKeyFromPassword(password, salt: salt, rounds: UInt32(rounds.uintValue))
+        if let password = password {
+            guard
+                let saltStr = self.archiveDictionary[.salt] as? String,
+                let salt = Data(base64Encoded: saltStr),
+                let rounds = self.archiveDictionary[.rounds] as? NSNumber else {
+                throw SecureKeyArchiveError.invalidArchiveData
+            }
             
-            data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData)
-        } catch {
-            self.logger.log(.error, message: "Failed to decrypt the key archive: \(error)")
-            throw SecureKeyArchiveError.fatalError
+            guard !password.isEmpty else {
+                throw SecureKeyArchiveError.invalidPassword
+            }
+
+            do {
+                let key = try self.keyManager.createSymmetricKeyFromPassword(password, salt: salt, rounds: UInt32(rounds.uintValue))
+                
+                data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData)
+            } catch {
+                self.logger.log(.error, message: "Failed to decrypt the key archive: \(error)")
+                throw SecureKeyArchiveError.fatalError
+            }
+        } else {
+            data = keysData
         }
         
         guard let array = data?.toJSONObject() as? [[String: AnyObject]] else {
