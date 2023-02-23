@@ -450,11 +450,7 @@ final public class LegacySudoKeyManager {
 // MARK: SudoKeyManager
 
 extension LegacySudoKeyManager: SudoKeyManager {
-    
-    public func addPassword(_ password: Data, name: String) throws {
-        try addPassword(password, name: name, isSynchronizable: false, isExportable: true)
-    }
-    
+
     public func addPassword(_ password: Data, name: String, isSynchronizable: Bool, isExportable: Bool) throws {
         var dictionary = try createKeySearchDictionary(name, type: .password)
         dictionary[Constants.secAttrLabel] = isExportable ? Constants.keyLabelExportable as AnyObject : Constants.keyLabelNotExportable as AnyObject
@@ -1507,6 +1503,22 @@ extension LegacySudoKeyManager: SudoKeyManager {
     
     public func createIV() throws -> Data {
         return try createRandomData(self.blockSizeAES)
+    }
+    
+    public func addPublicKeyFromPEM(_ key: String, name: String) throws {
+        throw SudoKeyManagerError.notImplemented
+    }
+    
+    public func addPublicKeyFromPEM(_ key: String, name: String, isExportable: Bool) throws {
+        throw SudoKeyManagerError.notImplemented
+    }
+    
+    public func getPublicKeyAsPEM(_ name: String) throws -> String? {
+        throw SudoKeyManagerError.notImplemented
+    }
+        
+    public func addPassword(_ password: Data, name: String) throws {
+        try addPassword(password, name: name, isSynchronizable: false, isExportable: true)
     }
     
 }

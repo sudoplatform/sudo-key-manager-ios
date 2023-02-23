@@ -12,6 +12,7 @@ import Foundation
 /// - keyAttributeNotMutable: Indicates that the specified key attribute is not modifiable.
 /// - keyAttributeNotSearchable: Indicates that the specified key attribute is not searchable.
 /// - keyNotFound: Indicates the specified key was not found.
+/// - invalidKey: Indicates the input key was invalid.
 /// - invalidKeyName: Indicates the specified key name was invalid, e.g. empty string.
 /// - invalidKeyType: Indicates the specified key type was invalid.
 /// - invalidSearchParam: Indicates key search parameters were invalid.
@@ -27,6 +28,7 @@ public enum SudoKeyManagerError: Error, Equatable {
     case keyAttributeNotMutable
     case keyAttributeNotSearchable
     case keyNotFound
+    case invalidKey
     case invalidKeyName
     case invalidKeyType
     case invalidSearchParam
@@ -358,6 +360,19 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.fatalError`
     func addPublicKey(_ key: Data, name: String) throws
     
+    /// Adds a PEM encoded public key to the secure store.
+    ///
+    /// - Parameters:
+    ///   - key: Public key to store securely.
+    ///   - name: Name of the public key to be stored.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.duplicateKey`,
+    ///     `SudoKeyManagerError.invalidKey`,
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.fatalError`
+    func addPublicKeyFromPEM(_ key: String, name: String) throws
+    
     /// Adds a public key to the secure store.
     ///
     /// - Parameters:
@@ -370,6 +385,20 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
     ///     `SudoKeyManagerError.fatalError`
     func addPublicKey(_ key: Data, name: String, isExportable: Bool) throws
+    
+    /// Adds a PEM encoded public key to the secure store.
+    ///
+    /// - Parameters:
+    ///   - key: Public key to store securely.
+    ///   - name: Name of the public key to be stored.
+    ///   - isExportable: Indicates whether or not the password is exportable.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.duplicateKey`,
+    ///     `SudoKeyManagerError.invalidKey`,
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.fatalError`
+    func addPublicKeyFromPEM(_ key: String, name: String, isExportable: Bool) throws
 
     /// Retrieves a public key from the secure store.
     ///
@@ -381,6 +410,17 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
     ///     `SudoKeyManagerError.fatalError`
     func getPublicKey(_ name: String) throws -> Data?
+    
+    /// Retrieves a public key from the secure store as PEM encoded string.
+    ///
+    /// - Parameter name: Name of the public key to be retrieved.
+    ///
+    /// - Returns: Requested public key or nil if the key was not found.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.fatalError`
+    func getPublicKeyAsPEM(_ name: String) throws -> String?
     
     /// Deletes a public key from the secure store.
     ///

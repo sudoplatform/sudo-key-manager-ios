@@ -93,6 +93,9 @@ final public class DefaultSudoKeyManager {
         static let secMatchLimitAll = kSecMatchLimitAll as String
         static let secAttrSynchronizableAny = kSecAttrSynchronizableAny as String
         static let secAttrAccessibleAfterFirstUnlock = kSecAttrAccessibleAfterFirstUnlock as String
+        
+        static let rsaPublicKeyPEMHeader = "-----BEGIN RSA PUBLIC KEY-----"
+        static let rsaPublicKeyPEMFooter = "-----END RSA PUBLIC KEY-----"
     }
     
     /// The service name (`KSecAttrService`) to associate with passwords. It is used
@@ -914,6 +917,10 @@ extension DefaultSudoKeyManager: SudoKeyManager {
         try self.addPublicKey(key, name: name, isExportable: true)
     }
     
+    public func addPublicKeyFromPEM(_ key: String, name: String) throws {
+        try self.addPublicKeyFromPEM(key, name: name, isExportable: true)
+    }
+    
     public func addPublicKey(_ key: Data, name: String, isExportable: Bool) throws {
         var dictionary = try createKeySearchDictionary(name, type: .publicKey)
         dictionary[Constants.secAttrLabel] = isExportable ? Constants.keyLabelExportable as AnyObject : Constants.keyLabelNotExportable as AnyObject
@@ -948,8 +955,30 @@ extension DefaultSudoKeyManager: SudoKeyManager {
         }
     }
     
+    public func addPublicKeyFromPEM(_ key: String, name: String, isExportable: Bool) throws {
+        var trimmed = key.replacingOccurrences(of: "\n", with: "")
+        trimmed = trimmed.replacingOccurrences(of: Constants.rsaPublicKeyPEMHeader, with: "")
+        trimmed = trimmed.replacingOccurrences(of: Constants.rsaPublicKeyPEMFooter, with: "")
+        
+        guard !trimmed.isEmpty, let keyData = Data(base64Encoded: trimmed) else {
+            throw SudoKeyManagerError.invalidKey
+        }
+        
+        try self.addPublicKey(keyData, name: name, isExportable: isExportable)
+    }
+    
     public func getPublicKey(_ name: String) throws -> Data? {
         return try getKeyData(createKeySearchDictionary(name, type: .publicKey))
+    }
+    
+    
+    public func getPublicKeyAsPEM(_ name: String) throws -> String? {
+        guard let keyData = try self.getPublicKey(name) else {
+            return nil
+        }
+        
+        let chunks = keyData.base64EncodedString().chunk(length: 64)
+        return Constants.rsaPublicKeyPEMHeader + "\n" + chunks.joined(separator: "\n") + "\n" + Constants.rsaPublicKeyPEMFooter
     }
     
     public func deletePublicKey(_ name: String) throws {

@@ -20,6 +20,7 @@
 		D90C60B61DCAE56D00BE37A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D90C60B41DCAE56D00BE37A0 /* LaunchScreen.storyboard */; };
 		D94695231DC81B0C00967D17 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94695221DC81B0C00967D17 /* MigrationManager.swift */; };
 		D94695261DC81B1E00967D17 /* MigrationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94695251DC81B1E00967D17 /* MigrationOperation.swift */; };
+		D961CD3429A73A8300D9437F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D961CD3329A73A8300D9437F /* String.swift */; };
 		D98091531D35EBD4003D1D0B /* SudoKeyManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D98091521D35EBD4003D1D0B /* SudoKeyManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D980915A1D35EBD4003D1D0B /* SudoKeyManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */; };
 		D98091841D35EC81003D1D0B /* SudoKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98091831D35EC81003D1D0B /* SudoKeyManagerTests.swift */; };
@@ -69,6 +70,7 @@
 		D94695221DC81B0C00967D17 /* MigrationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationManager.swift; sourceTree = "<group>"; };
 		D94695251DC81B1E00967D17 /* MigrationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationOperation.swift; sourceTree = "<group>"; };
 		D94B94FE1D597CCA000B76CE /* SudoKeyManager.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = SudoKeyManager.podspec; sourceTree = "<group>"; };
+		D961CD3329A73A8300D9437F /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SudoKeyManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98091521D35EBD4003D1D0B /* SudoKeyManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SudoKeyManager.h; sourceTree = "<group>"; };
 		D98091541D35EBD4003D1D0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 				D9939DF61D64193C00DD3202 /* Array.swift */,
 				D9939DEF1D64189500DD3202 /* Dictionary.swift */,
 				D9939DF01D64189500DD3202 /* Data.swift */,
+				D961CD3329A73A8300D9437F /* String.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 				D9939DEA1D64149800DD3202 /* SecureKeyArchive.swift in Sources */,
 				D94695231DC81B0C00967D17 /* MigrationManager.swift in Sources */,
 				D9BDF0FF286D310E00DD38F5 /* LegacySudoKeyManager.swift in Sources */,
+				D961CD3429A73A8300D9437F /* String.swift in Sources */,
 				D9939DF31D64189500DD3202 /* Data.swift in Sources */,
 				84A2A5BA22ADE8F500A088D5 /* KeyAttributeSet.swift in Sources */,
 			);
