@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name                  = 'SudoKeyManager'
-  spec.version               = '2.3.0'
+  spec.version               = '2.4.0'
   spec.author                = { 'Sudo Platform Engineering' => 'sudoplatform-engineering@anonyome.com' }
   spec.homepage              = 'https://sudoplatform.com'
   spec.summary               = 'Key Manager SDK for the Sudo Platform by Anonyome Labs.'
@@ -10,4 +10,6 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '14.0'
   spec.requires_arc          = true
   spec.swift_version         = '5.0'
+  spec.dependency 'GzipSwift', '~> 5.0'
+  spec.dependency 'ASN1Swift', '~> 1.2'
 end

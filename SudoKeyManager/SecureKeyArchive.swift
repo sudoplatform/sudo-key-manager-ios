@@ -5,6 +5,8 @@
 //
 
 import Foundation
+import Gzip
+import ASN1Swift
 
 /// List of possible errors thrown by `SecureKeyArchive` implementation.
 ///
@@ -37,6 +39,7 @@ public enum SecureKeyArchiveAttribute: String {
     case keys = "Keys"
     case salt = "Salt"
     case rounds = "Rounds"
+    case iv = "IV"
     case metaInfo = "MetaInfo"
 }
 
@@ -44,6 +47,133 @@ public enum SecureKeyArchiveAttribute: String {
 public enum SecureKeyArchiveType: String {
     case secure = "Secure"
     case insecure = "Insecure"
+}
+
+/// Supported archive versions.
+public enum SecureKeyArchiveVersion: Int {
+    case v1 = 1
+    case v2 = 2
+    case v3 = 3
+}
+
+struct Algorithm: ASN1Decodable
+{
+    public var oid: String
+    public var parameters: ASN1Null
+    
+    enum CodingKeys: ASN1CodingKey
+    {
+        case oid
+        case parameters
+        
+        var template: ASN1Template
+        {
+            switch self
+            {
+            case .oid:
+                return .universal(ASN1Identifier.Tag.objectIdentifier)
+            case .parameters:
+                return .universal(ASN1Identifier.Tag.null)
+            }
+        }
+    }
+    
+    init(from decoder: Decoder) throws
+    {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.oid = try container.decode(String.self, forKey: .oid)
+        self.parameters = try container.decode(ASN1Null.self, forKey: .parameters)
+    }
+    
+    static var template: ASN1Template
+    {
+        return ASN1Template.universal(ASN1Identifier.Tag.sequence).constructed()
+    }
+    
+}
+
+struct PublicKeyInfo: ASN1Decodable
+{
+    var algorithm: Algorithm
+    var subjectPublicKey: Data
+    
+    enum CodingKeys: ASN1CodingKey
+    {
+        case algorithm
+        case subjectPublicKey
+        
+        var template: ASN1Template
+        {
+            switch self
+            {
+            case .algorithm:
+                return ASN1Template.universal(ASN1Identifier.Tag.sequence).constructed()
+            case .subjectPublicKey:
+                return ASN1Template.universal(ASN1Identifier.Tag.bitString)
+            }
+        }
+    }
+    
+    init(from decoder: Decoder) throws
+    {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.algorithm = try container.decode(Algorithm.self, forKey: .algorithm)
+        let data = try container.decode(Data.self, forKey: .subjectPublicKey)
+        // The leading byte of bit string indicates the number of unused
+        // bits in the last byte of the bit string content. In this case, the
+        // last byte is a part of public exponent integer so it's completely
+        // used hence the leading byte will always be zero. It's safe to just
+        // strip it.
+        self.subjectPublicKey = data.advanced(by: 1)
+    }
+    
+    static var template: ASN1Template
+    {
+        return ASN1Template.universal(ASN1Identifier.Tag.sequence).constructed()
+    }
+}
+
+struct PrivateKeyInfo: ASN1Decodable
+{
+    var version: Int
+    var algorithm: Algorithm
+    var privateKey: Data
+    
+    enum CodingKeys: ASN1CodingKey
+    {
+        case version
+        case algorithm
+        case privateKey
+        
+        var template: ASN1Template
+        {
+            switch self
+            {
+            case .version:
+                return ASN1Template.universal(ASN1Identifier.Tag.integer)
+            case .algorithm:
+                return ASN1Template.universal(ASN1Identifier.Tag.sequence).constructed()
+            case .privateKey:
+                return ASN1Template.universal(ASN1Identifier.Tag.octetString)
+            }
+        }
+    }
+    
+    init(from decoder: Decoder) throws
+    {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.version = try container.decode(Int.self, forKey: .version)
+        self.algorithm = try container.decode(Algorithm.self, forKey: .algorithm)
+        self.privateKey = try container.decode(Data.self, forKey: .privateKey)
+    }
+    
+    static var template: ASN1Template
+    {
+        return ASN1Template.universal(ASN1Identifier.Tag.sequence).constructed()
+    }
 }
 
 /// Protocol encapsulating a set of methods required for creating and
@@ -56,13 +186,27 @@ public protocol SecureKeyArchive {
     /// - Parameter keyManager: `SudoKeyManager` instance for accessing keys.
     init(keyManager: SudoKeyManager)
     
-    /// Intializes a new `SecureKeyArchive` instance with encrypted
-    /// archive data.
+    /// Intializes a new `SecureKeyArchive` instance.
     ///
     /// - Parameters:
-    ///   - archiveData: encrypted key archive data.
+    ///   - keyManager: `SudoKeyManager` instance for accessing keys.
+    ///   - zip: Indiciates whether or not the archive data should be zipped.
+    init(keyManager: SudoKeyManager, zip: Bool)
+    
+    /// Intializes a new `SecureKeyArchive` instance with archive data.
+    ///
+    /// - Parameters:
+    ///   - archiveData: key archive data.
     ///   - keyManager: `SudoKeyManager` instance.
     init?(archiveData: Data, keyManager: SudoKeyManager)
+    
+    /// Intializes a new `SecureKeyArchive` instance with archive data.
+    ///
+    /// - Parameters:
+    ///   - archiveData: key archive data.
+    ///   - keyManager: `SudoKeyManager` instance.
+    ///   - zip: Indiciates whether or not the archive data has been zipped.
+    init?(archiveData: Data, keyManager: SudoKeyManager, zip: Bool)
     
     /// Loads keys from the secure store into the archive.
     ///
@@ -89,7 +233,8 @@ public protocol SecureKeyArchive {
     
     /// Decrypts and unarchives the keys in this archive.
     ///
-    /// - Parameter password: Password to use to decrypt the archive. If nil no decryption is performed.
+    /// - Parameters
+    ///     - password: Password to use to decrypt the archive. If nil no decryption is performed.
     ///
     /// - Throws:
     ///     `SecureKeyArchiveError.invalidPassword`
@@ -132,6 +277,9 @@ public protocol SecureKeyArchive {
     /// Archive version.
     var version: Int { get }
     
+    /// Archive type.
+    var type: SecureKeyArchiveType { get }
+    
     /// List of key name spaces associated with this archive.
     var namespaces: [String] { get }
     
@@ -141,14 +289,15 @@ public protocol SecureKeyArchive {
 /// saves keys to and from Apple's keychain. The keys are encrypted
 /// using AES.
 public class SecureKeyArchiveImpl {
-
+        
     /// List of contants used by this class.
     fileprivate struct Constants {
         
-        static let version = 2
+        /// Initialization vector size in bytes for AES encryption.
+        static let ivSize = 16
         
     }
-    
+
     public var excludedKeys: [String] = []
     
     public var metaInfo: [String: String] = [:]
@@ -157,10 +306,13 @@ public class SecureKeyArchiveImpl {
 
     /// Keys associated with this archive.
     public fileprivate(set) var keys: [[KeyAttributeName: AnyObject]] = []
-
+        
     /// Archive version.
-    public fileprivate(set) var version = Constants.version
+    public fileprivate(set) var version = 2
     
+    /// Archive type.
+    public fileprivate(set) var type = SecureKeyArchiveType.secure
+
     public var keyManager: SudoKeyManager
 
     /// Encrypted archive data.
@@ -168,20 +320,45 @@ public class SecureKeyArchiveImpl {
     
     /// Dictionary representing the deserialized content of an archive.
     fileprivate var archiveDictionary: [SecureKeyArchiveAttribute: AnyObject] = [:]
+    
+    /// Indicates whether or not the archive uses gzip compression.
+    fileprivate var zip = false
 
     /// Logger.
     fileprivate let logger = Logger.sharedInstance
     
-    public required init(keyManager: SudoKeyManager) {
+    // ASN.1 decoder.
+    fileprivate let asn1Decoder = ASN1Decoder()
+    
+    public required convenience init(keyManager: SudoKeyManager) {
+        self.init(keyManager: keyManager, zip: false)
+    }
+    
+    public required init(keyManager: SudoKeyManager, zip: Bool) {
         self.keyManager = keyManager
+        self.zip = zip
+        if self.zip {
+            // If we are using zip then it must be v3 archive.
+            self.version = SecureKeyArchiveVersion.v3.rawValue
+        }
     }
 
-    public required init?(archiveData: Data, keyManager: SudoKeyManager) {
+    public required init?(archiveData: Data, keyManager: SudoKeyManager, zip: Bool) {
         self.keyManager = keyManager
         self.archiveData = archiveData
+        self.zip = zip
        
-        guard let archiveDictionary = archiveData.toJSONObject() as? [String: AnyObject] else {
-            return nil;
+        if self.zip {
+            do {
+                self.archiveData = try self.archiveData?.gunzipped()
+            } catch {
+                self.logger.log(.error, message: "Failed to unzip archive data: \(error)")
+                return nil
+            }
+        }
+        
+        guard let archiveDictionary = self.archiveData?.toJSONObject() as? [String: AnyObject] else {
+            return nil
         }
         
         // Convert String keys to Enum keys.
@@ -199,20 +376,42 @@ public class SecureKeyArchiveImpl {
         }
     }
     
+    public required convenience init?(archiveData: Data, keyManager: SudoKeyManager) {
+        self.init(archiveData: archiveData, keyManager: keyManager, zip: false)
+    }
+        
 }
 
 // MARK: SecureKeyArchive
 
 extension SecureKeyArchiveImpl: SecureKeyArchive {
-    
+        
     public func loadKeys() throws {
         do {
             let keys = try self.keyManager.exportKeys()
             
-            for key in keys {
+            for var key in keys {
                 if let name = key[.name] as? String, !self.excludedKeys.contains(name) {
                     if let namespace = key[.namespace] as? String, !namespace.isEmpty, !namespaces.contains(namespace) {
                         namespaces.append(namespace)
+                    }
+                    if self.zip {
+                        // If we are dealing with v3 archive then we need to convert the
+                        // format of public and private keys since JS SDK uses different
+                        // formats.
+                        if let type = key[.type] as? String {
+                            if KeyType(rawValue: type) == KeyType.privateKey {
+                                if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
+                                    let rsaPrivateKey = RSAPrivateKey(keyData: data)
+                                    key[.data] = rsaPrivateKey.toPrivateKeyInfo().base64EncodedString() as AnyObject
+                                }
+                            } else if KeyType(rawValue: type) == KeyType.publicKey {
+                                if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
+                                    let rsaPublicKey = RSAPublicKey(keyData: data)
+                                    key[.data] = rsaPublicKey.toSubjectPublicKeyInfo().base64EncodedString() as AnyObject
+                                }
+                            }
+                        }
                     }
                     self.keys.append(key)
                 }
@@ -234,8 +433,26 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         do {
             var keys: [[KeyAttributeName: AnyObject]] = []
             
-            for key in self.keys {
+            for var key in self.keys {
                 if let name = key[.name] as? String, !self.excludedKeys.contains(name) {
+                    if self.zip {
+                        // If we are dealing with v3 archive then we need to convert the
+                        // format of public and private keys since JS SDK uses different
+                        // formats.
+                        if let type = key[.type] as? String {
+                            if KeyType(rawValue: type) == KeyType.privateKey {
+                                if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
+                                    let privateKeyInfo = try asn1Decoder.decode(PrivateKeyInfo.self, from: data)
+                                    key[.data] = privateKeyInfo.privateKey.base64EncodedString() as AnyObject
+                                }
+                            } else if KeyType(rawValue: type) == KeyType.publicKey {
+                                if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
+                                    let publicKeyInfo = try asn1Decoder.decode(PublicKeyInfo.self, from: data)
+                                    key[.data] = publicKeyInfo.subjectPublicKey.base64EncodedString() as AnyObject
+                                }
+                            }
+                        }
+                    }
                     keys.append(key)
                 }
             }
@@ -266,7 +483,7 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             keys.append(Dictionary(dictionary.map { (k, v) in (k.rawValue, v) }))
         }
         
-        guard let data = keys.toJSONData() else {
+        guard var data = keys.toJSONData() else {
             throw SecureKeyArchiveError.fatalError
         }
         
@@ -281,7 +498,20 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
                 self.archiveDictionary[.salt] = salt.base64EncodedString() as AnyObject
                 self.archiveDictionary[.rounds] = NSNumber(value: rounds as UInt32)
                 
-                let encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data)
+                let encryptedData: Data
+                if self.zip {
+                    // V3 archive requires you to zip the input to encryption.
+                    data = try data.gzipped(level: .bestCompression)
+                    
+                    // Random IV is not necessary for secure archives but JS SDK uses it so we need to
+                    // be consistent for interop. The use of non default IV also makes V3 secure archive
+                    // not compatible with AES-GCM.
+                    let random = try self.keyManager.createRandomData(Constants.ivSize)
+                    encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data, iv: random)
+                    self.archiveDictionary[.iv] = random.base64EncodedString() as AnyObject
+                } else {
+                    encryptedData = try self.keyManager.encryptWithSymmetricKey(key, data: data)
+                }
                 
                 self.archiveDictionary[.keys] = encryptedData.base64EncodedString() as AnyObject
             } catch {
@@ -290,33 +520,48 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             }
         } else {
             self.archiveDictionary[.type] = SecureKeyArchiveType.insecure.rawValue as AnyObject
-            self.archiveDictionary[.keys] = data.base64EncodedString() as AnyObject
+            if self.zip {
+                self.archiveDictionary[.keys] = keys as AnyObject
+            } else {
+                self.archiveDictionary[.keys] = data.base64EncodedString() as AnyObject
+            }
         }
         
         // Convert Enum keys to String keys satisfy the requirements for JSON serializer.
-        guard let archiveData = Dictionary(self.archiveDictionary.map { (k, v) in (k.rawValue, v) }).toJSONData() else {
+        guard var archiveData = Dictionary(self.archiveDictionary.map { (k, v) in (k.rawValue, v) }).toJSONData() else {
             throw SecureKeyArchiveError.fatalError
         }
         
+        if self.zip {
+            archiveData = try archiveData.gzipped(level: .bestCompression)
+        }
         return archiveData
     }
     
     public func unarchive(_ password: String?) throws {
-        guard let version = self.archiveDictionary[.version] as? Int,
-            let keysStr = self.archiveDictionary[.keys] as? String,
-            let keysData = Data(base64Encoded: keysStr) else {
+        guard let version = self.archiveDictionary[.version] as? Int else {
             throw SecureKeyArchiveError.invalidArchiveData
         }
+                
+        self.version = version
         
-        guard version == Constants.version else {
+        guard let supportedVersion = SecureKeyArchiveVersion(rawValue: self.version) else {
             throw SecureKeyArchiveError.versionMismatch
         }
         
-        self.version = version
+        if let type = self.archiveDictionary[.type] as? String {
+            guard let supportedType = SecureKeyArchiveType(rawValue: type) else {
+                throw SecureKeyArchiveError.invalidArchiveData
+            }
+            
+            self.type = supportedType
+        }
         
-        var data: Data?
+        let keys: [[String: AnyObject]]?
         if let password = password {
             guard
+                let keysStr = self.archiveDictionary[.keys] as? String,
+                var keysData = Data(base64Encoded: keysStr),
                 let saltStr = self.archiveDictionary[.salt] as? String,
                 let salt = Data(base64Encoded: saltStr),
                 let rounds = self.archiveDictionary[.rounds] as? NSNumber else {
@@ -330,16 +575,38 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             do {
                 let key = try self.keyManager.createSymmetricKeyFromPassword(password, salt: salt, rounds: UInt32(rounds.uintValue))
                 
-                data = try self.keyManager.decryptWithSymmetricKey(key, data: keysData)
+                // Random IV is not necessary for secure archives but JS SDK uses it so we need to
+                // be consistent for interop. The use of non default IV also makes V3 secure archive
+                // not compatible with AES-GCM.
+                if let ivStr = self.archiveDictionary[.iv] as? String, let iv = Data(base64Encoded: ivStr) {
+                    keysData = try self.keyManager.decryptWithSymmetricKey(key, data: keysData, iv: iv)
+                } else {
+                    keysData = try self.keyManager.decryptWithSymmetricKey(key, data: keysData)
+                }
+                                
+                if self.zip {
+                    // V3 encrypted archive is zipped twice so we need to unzip one more time.
+                    keysData = try keysData.gunzipped()
+                }
+                keys = keysData.toJSONObject() as? [[String: AnyObject]]
             } catch {
                 self.logger.log(.error, message: "Failed to decrypt the key archive: \(error)")
                 throw SecureKeyArchiveError.fatalError
             }
         } else {
-            data = keysData
+            if supportedVersion == SecureKeyArchiveVersion.v3 {
+                keys = self.archiveDictionary[.keys] as? [[String: AnyObject]]
+            } else {
+                guard
+                    let keysStr = self.archiveDictionary[.keys] as? String,
+                    let keysData = Data(base64Encoded: keysStr) else {
+                    throw SecureKeyArchiveError.invalidArchiveData
+                }
+                keys = keysData.toJSONObject() as? [[String: AnyObject]]
+            }
         }
-        
-        guard let array = data?.toJSONObject() as? [[String: AnyObject]] else {
+       
+        guard let keys = keys else {
             throw SecureKeyArchiveError.malformedKeySetData
         }
         
@@ -347,7 +614,7 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
         
         // Convert all String keys to Enum keys. We can't use simple mapping here
         // since a String key may fail to convert to Enum key.
-        for element in array {
+        for element in keys {
             var dictionary: [KeyAttributeName: AnyObject] = [:]
             for key in element.keys {
                 guard let newKey = KeyAttributeName(rawValue: key) else {

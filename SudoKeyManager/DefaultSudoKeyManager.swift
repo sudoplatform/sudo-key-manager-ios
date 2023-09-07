@@ -1341,22 +1341,21 @@ extension DefaultSudoKeyManager: SudoKeyManager {
                 continue
             }
             
-            if let keyType = KeyType(rawValue: type) {
-                switch keyType {
-                case .password:
-                    if let isSynchronizable = key[.synchronizable] as? Bool, isSynchronizable {
-                        try addPassword(data, name: name, isSynchronizable: isSynchronizable, isExportable: true)
-                    }
-                    try addPassword(data, name: name)
-                case .symmetricKey:
-                    try addSymmetricKey(data, name: name)
-                case .privateKey:
-                    try addPrivateKey(data, name: name)
-                case .publicKey:
-                    try addPublicKey(data, name: name)
-                default:
-                    break
+            let keyType = KeyType(rawValue: type)
+            switch keyType {
+            case .password:
+                if let isSynchronizable = key[.synchronizable] as? Bool, isSynchronizable {
+                    try addPassword(data, name: name, isSynchronizable: isSynchronizable, isExportable: true)
                 }
+                try addPassword(data, name: name)
+            case .symmetricKey:
+                try addSymmetricKey(data, name: name)
+            case .privateKey:
+                try addPrivateKey(data, name: name)
+            case .publicKey:
+                try addPublicKey(data, name: name)
+            default:
+                break
             }
         }
     }

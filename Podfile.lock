@@ -1,0 +1,20 @@
+PODS:
+  - ASN1Swift (1.2.3)
+  - GzipSwift (5.1.1)
+
+DEPENDENCIES:
+  - ASN1Swift (~> 1.2)
+  - GzipSwift (~> 5.0)
+
+SPEC REPOS:
+  trunk:
+    - ASN1Swift
+    - GzipSwift
+
+SPEC CHECKSUMS:
+  ASN1Swift: 73ba94f1d97c1c1d059d180708ad42845aeac4f9
+  GzipSwift: 893f3e48e597a1a4f62fafcb6514220fcf8287fa
+
+PODFILE CHECKSUM: dd14688d3c4d79c52a96e167b0e4fe63514f3eb6
+
+COCOAPODS: 1.12.1

@@ -1,0 +1,6 @@
+framework module Pods_SudoKeyManager {
+  umbrella header "Pods-SudoKeyManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -26,4 +26,23 @@ public enum KeyType: String {
     case symmetricKey = "SymmetricKey"
     case password = "Password"
     case unknown = "Unknown"
+    
+    public init(rawValue: String) {
+        // We need to override the default initializer in order to
+        // ensure interoperability with JS SDK since it uses different
+        // casing for key types.
+        switch rawValue.lowercased() {
+        case KeyType.privateKey.rawValue.lowercased():
+            self = .privateKey
+        case KeyType.publicKey.rawValue.lowercased():
+            self = .publicKey
+        case KeyType.symmetricKey.rawValue.lowercased():
+            self = .symmetricKey
+        case KeyType.password.rawValue.lowercased():
+            self = .password
+        default:
+            self = .unknown
+        }
+    }
+    
 }
