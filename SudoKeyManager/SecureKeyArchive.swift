@@ -267,9 +267,12 @@ public protocol SecureKeyArchive {
     
     /// Key manager used for managing keys and performing cryptographic operations.
     var keyManager: SudoKeyManager { get set }
-    
+
     /// List of key names to exclude from the archive.
     var excludedKeys: [String] { get set }
+
+    /// List of key types to exclude from the archive.
+    var excludedKeyTypes: [String] { get set }
     
     /// Meta-information associated with this archive.
     var metaInfo: [String: String] { get set }
@@ -299,6 +302,8 @@ public class SecureKeyArchiveImpl {
     }
 
     public var excludedKeys: [String] = []
+
+    public var excludedKeyTypes: [String] = []
     
     public var metaInfo: [String: String] = [:]
     
@@ -391,7 +396,10 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             let keys = try self.keyManager.exportKeys()
             
             for var key in keys {
-                if let name = key[.name] as? String, !self.excludedKeys.contains(name) {
+                if let name = key[.name] as? String,
+                   !self.excludedKeys.contains(name),
+                    let keyType = key[.type] as? String,
+                   !self.excludedKeyTypes.contains(keyType) {
                     if let namespace = key[.namespace] as? String, !namespace.isEmpty, !namespaces.contains(namespace) {
                         namespaces.append(namespace)
                     }
