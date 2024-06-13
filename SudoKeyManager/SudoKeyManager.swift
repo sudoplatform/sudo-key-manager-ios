@@ -470,26 +470,41 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.fatalError`
     func verifySignatureWithPublicKey(_ name: String, data: Data, signature: Data) throws -> Bool
 
-    /// Encrypts the given data with the specified public key.
+    /// Encrypts the given data with the specified public key stored in the secure store.
     ///
     /// - Parameters:
     ///   - name: Name of the public key to use for encryption.
-    ///   - data: Data encrypt.
+    ///   - data: Data to encrypt.
     ///   - algorithm: Encryption algorithm to use.
     ///
-    /// - Returns: encrypted data.
+    /// - Returns: Encrypted data.
     ///
     /// - Throws:
     ///     `SudoKeyManagerError.keyNotFound`,
-    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`,
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`
     ///     `SudoKeyManagerError.fatalError`
     func encryptWithPublicKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data
-    
+
+    /// Encrypts the given data with the specified public key.
+    ///
+    /// - Parameters:
+    ///   - key: Public key data.
+    ///   - data: Data to encrypt.
+    ///   - algorithm: Encryption algorithm to use.
+    ///
+    /// - Returns: Encrypted data.
+    ///
+    /// - Throws:
+    ///     `SudoKeyManagerError.invalidKeyError`,
+    ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`
+    ///     `SudoKeyManagerError.fatalError`
+    func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data
+
     /// Decrypts the given data with the specified private key.
     ///
     /// - Parameters:
     ///   - name: Name of the private key to use for decryption.
-    ///   - data: Data decrypt.
+    ///   - data: Data to decrypt.
     ///   - algorithm: Decryption algorithm to use.
     ///
     /// - Throws:
@@ -576,7 +591,11 @@ public extension SudoKeyManager {
     func encryptWithPublicKey(_ name: String, data: Data) throws -> Data {
         return try encryptWithPublicKey(name, data: data, algorithm: .rsaEncryptionPKCS1)
     }
-    
+
+    func encryptWithPublicKey(_ key: Data, data: Data) throws -> Data {
+        return try encryptWithPublicKey(key, data: data, algorithm: .rsaEncryptionPKCS1)
+    }
+
     func decryptWithPrivateKey(_ name: String, data: Data) throws -> Data {
         return try decryptWithPrivateKey(name, data: data, algorithm: .rsaEncryptionPKCS1)
     }

@@ -1119,12 +1119,12 @@ extension LegacySudoKeyManager: SudoKeyManager {
         var encryptedData = Data()
 
         let searchDictionary = try createKeySearchDictionary(name, type: .publicKey, returnDataType: .reference)
-        
+
         var result: AnyObject?
         var status = SecItemCopyMatching(searchDictionary as CFDictionary, &result)
 
 
-        
+
         switch status {
         case errSecSuccess:
             // Conditional downcast to SecKey will always succeed as it is
@@ -1132,17 +1132,17 @@ extension LegacySudoKeyManager: SudoKeyManager {
             // way to make the compiler happy.
             let key = result as! SecKey
 
-            
+
             // Determine the block size which is proportional to the key size.
             let blockSize = SecKeyGetBlockSize(key)
 
             var buffer = [UInt8](repeating: 0,  count: blockSize)
-            
+
             // When padding is used the encrypted data will be 11 bytes longer than the input
             // so the maximum length of data that can be encrypted is 11 bytes less than
             // the block size associated with the given key.
             let maxPlainTextLen = blockSize - 11
-            
+
             // Total bytes encrypted.
             var bytesEncrypted = 0
 
@@ -1156,7 +1156,7 @@ extension LegacySudoKeyManager: SudoKeyManager {
                     let cursor = bytes.advanced(by: bytesEncrypted)
                     let bytesToEncrypt = maxPlainTextLen > data.count - bytesEncrypted ? data.count - bytesEncrypted : maxPlainTextLen
                     var bytesWritten = buffer.count
-                        
+
                         let padding: SecPadding
                         switch algorithm {
                         case .rsaEncryptionOAEPSHA1:
@@ -1164,14 +1164,14 @@ extension LegacySudoKeyManager: SudoKeyManager {
                         case .rsaEncryptionPKCS1:
                             padding = .PKCS1
                         }
-                        
+
                         status = SecKeyEncrypt(key,
                                                padding,
                                                cursor,
                                                bytesToEncrypt,
                                                &buffer,
                                                &bytesWritten)
-                    
+
                     if status == noErr {
                         bytesEncrypted += bytesToEncrypt
                         encryptedData.append(buffer, count: bytesWritten)
@@ -1185,10 +1185,14 @@ extension LegacySudoKeyManager: SudoKeyManager {
         default:
             throw SudoKeyManagerError.unhandledUnderlyingSecAPIError(code: status)
         }
-        
+
         return encryptedData as Data
     }
-    
+
+    public func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
+        throw SudoKeyManagerError.notImplemented
+    }
+
     public func decryptWithPrivateKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
         var decryptedData = Data()
         

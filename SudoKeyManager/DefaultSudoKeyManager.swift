@@ -426,6 +426,60 @@ final public class DefaultSudoKeyManager {
         }
     }
 
+    fileprivate func encryptWithPublicKeySecKey(_ key: SecKey, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
+        var encryptedData = Data()
+
+        // Determine the block size which is proportional to the key size.
+        let blockSize = SecKeyGetBlockSize(key)
+
+        var buffer = [UInt8](repeating: 0,  count: blockSize)
+
+        // When padding is used the encrypted data will be 11 bytes longer than the input
+        // so the maximum length of data that can be encrypted is 11 bytes less than
+        // the block size associated with the given key.
+        let maxPlainTextLen = blockSize - 11
+
+        // Total bytes encrypted.
+        var bytesEncrypted = 0
+
+        try data.withUnsafeBytes { [unowned key] in
+            guard let bytes = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                throw SudoKeyManagerError.fatalError
+            }
+
+            // Encrypt the data one block at a time.
+            while bytesEncrypted < data.count {
+                let cursor = bytes.advanced(by: bytesEncrypted)
+                let bytesToEncrypt = maxPlainTextLen > data.count - bytesEncrypted ? data.count - bytesEncrypted : maxPlainTextLen
+                var bytesWritten = buffer.count
+
+                let padding: SecPadding
+                switch algorithm {
+                case .rsaEncryptionOAEPSHA1:
+                    padding = .OAEP
+                case .rsaEncryptionPKCS1:
+                    padding = .PKCS1
+                }
+
+                let status = SecKeyEncrypt(key,
+                                       padding,
+                                       cursor,
+                                       bytesToEncrypt,
+                                       &buffer,
+                                       &bytesWritten)
+
+                if status == noErr {
+                    bytesEncrypted += bytesToEncrypt
+                    encryptedData.append(buffer, count: bytesWritten)
+                } else {
+                    throw SudoKeyManagerError.unhandledUnderlyingSecAPIError(code: status)
+                }
+            }
+        }
+
+        return encryptedData as Data
+    }
+
     /// Resets the secure store holding the keys. This removes every key regardless
     /// of whether or not the key was created by `SudoKeyManager` so it should only
     ///  be used for debugging.
@@ -548,8 +602,7 @@ extension DefaultSudoKeyManager: SudoKeyManager {
         return secAttributesToSudoKeyManagerAttributes(dictionary)
     }
     
-    public func updateKeyAttributes(_ attributes: KeyAttributeSet, name: String, type: KeyType) throws
-    {
+    public func updateKeyAttributes(_ attributes: KeyAttributeSet, name: String, type: KeyType) throws {
         guard attributes.count > 0 else {
             return
         }
@@ -1087,14 +1140,12 @@ extension DefaultSudoKeyManager: SudoKeyManager {
         
         return valid
     }
-    
-    public func encryptWithPublicKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
-        var encryptedData = Data()
 
+    public func encryptWithPublicKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
         let searchDictionary = try createKeySearchDictionary(name, type: .publicKey, returnDataType: .reference)
-        
         var result: AnyObject?
-        var status = SecItemCopyMatching(searchDictionary as CFDictionary, &result)
+
+        let status = SecItemCopyMatching(searchDictionary as CFDictionary, &result)
         switch status {
         case errSecSuccess:
             // Conditional downcast to SecKey will always succeed as it is
@@ -1102,63 +1153,26 @@ extension DefaultSudoKeyManager: SudoKeyManager {
             // way to make the compiler happy.
             let key = result as! SecKey
 
-            
-            // Determine the block size which is proportional to the key size.
-            let blockSize = SecKeyGetBlockSize(key)
-
-            var buffer = [UInt8](repeating: 0,  count: blockSize)
-            
-            // When padding is used the encrypted data will be 11 bytes longer than the input
-            // so the maximum length of data that can be encrypted is 11 bytes less than
-            // the block size associated with the given key.
-            let maxPlainTextLen = blockSize - 11
-            
-            // Total bytes encrypted.
-            var bytesEncrypted = 0
-
-            try data.withUnsafeBytes { [unowned key] in
-                guard let bytes = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    throw SudoKeyManagerError.fatalError
-                }
-
-                // Encrypt the data one block at a time.
-                while bytesEncrypted < data.count {
-                    let cursor = bytes.advanced(by: bytesEncrypted)
-                    let bytesToEncrypt = maxPlainTextLen > data.count - bytesEncrypted ? data.count - bytesEncrypted : maxPlainTextLen
-                    var bytesWritten = buffer.count
-                        
-                        let padding: SecPadding
-                        switch algorithm {
-                        case .rsaEncryptionOAEPSHA1:
-                            padding = .OAEP
-                        case .rsaEncryptionPKCS1:
-                            padding = .PKCS1
-                        }
-                        
-                        status = SecKeyEncrypt(key,
-                                               padding,
-                                               cursor,
-                                               bytesToEncrypt,
-                                               &buffer,
-                                               &bytesWritten)
-                    
-                    if status == noErr {
-                        bytesEncrypted += bytesToEncrypt
-                        encryptedData.append(buffer, count: bytesWritten)
-                    } else {
-                        throw SudoKeyManagerError.unhandledUnderlyingSecAPIError(code: status)
-                    }
-                }
-            }
+            return try encryptWithPublicKeySecKey(key, data: data, algorithm: algorithm)
         case errSecItemNotFound:
             throw SudoKeyManagerError.keyNotFound
         default:
             throw SudoKeyManagerError.unhandledUnderlyingSecAPIError(code: status)
         }
-        
-        return encryptedData as Data
     }
-    
+
+    public func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
+        // Cast public key data to required SecKey type to use for encrypting.
+        guard let key = SecKeyCreateWithData(key as NSData, [
+            kSecAttrKeyType: Constants.secAttrKeyTypeRSA,
+            kSecAttrKeyClass: Constants.secAttrKeyClassPublic
+        ] as NSDictionary, nil) else {
+            throw SudoKeyManagerError.invalidKey
+        }
+
+        return try encryptWithPublicKeySecKey(key, data: data, algorithm: algorithm)
+    }
+
     public func decryptWithPrivateKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
         var decryptedData = Data()
         
