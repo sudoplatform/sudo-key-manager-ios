@@ -1162,15 +1162,17 @@ extension DefaultSudoKeyManager: SudoKeyManager {
     }
 
     public func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
-        // Cast public key data to required SecKey type to use for encrypting.
-        guard let key = SecKeyCreateWithData(key as NSData, [
-            kSecAttrKeyType: Constants.secAttrKeyTypeRSA,
-            kSecAttrKeyClass: Constants.secAttrKeyClassPublic
+        // Handle base64-encoded key data
+        let decodedKeyData = String(decoding: key, as: UTF8.self)
+        let keyData = Data(base64Encoded: decodedKeyData) ?? key
+        guard let secKey = SecKeyCreateWithData(keyData as NSData, [
+            kSecAttrKeyType: kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass: kSecAttrKeyClassPublic
         ] as NSDictionary, nil) else {
             throw SudoKeyManagerError.invalidKey
         }
 
-        return try encryptWithPublicKeySecKey(key, data: data, algorithm: algorithm)
+        return try encryptWithPublicKeySecKey(secKey, data: data, algorithm: algorithm)
     }
 
     public func decryptWithPrivateKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
