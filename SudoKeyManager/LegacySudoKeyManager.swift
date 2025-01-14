@@ -6,6 +6,7 @@
 
 import Security
 import CommonCrypto
+import Foundation
 
 /// Class encapsulating the default implementation of `SudoKeyManager` protocol
 /// that uses Apple's Keychain and Common Crypto API. Symmetric key

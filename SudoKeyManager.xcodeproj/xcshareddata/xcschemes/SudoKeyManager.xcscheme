@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D980914F1D35EBD4003D1D0B"
-               BuildableName = "SudoKeyManager.framework"
+               BlueprintIdentifier = "SudoKeyManager"
+               BuildableName = "SudoKeyManager"
                BlueprintName = "SudoKeyManager"
-               ReferencedContainer = "container:SudoKeyManager.xcodeproj">
+               ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -60,15 +60,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D980914F1D35EBD4003D1D0B"
-            BuildableName = "SudoKeyManager.framework"
-            BlueprintName = "SudoKeyManager"
-            ReferencedContainer = "container:SudoKeyManager.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -76,15 +67,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D980914F1D35EBD4003D1D0B"
-            BuildableName = "SudoKeyManager.framework"
-            BlueprintName = "SudoKeyManager"
-            ReferencedContainer = "container:SudoKeyManager.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

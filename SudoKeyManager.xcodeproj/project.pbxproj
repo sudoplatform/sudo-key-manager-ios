@@ -3,42 +3,23 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		84A2A5AF22ADE23600A088D5 /* KeyAttributeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5AE22ADE23600A088D5 /* KeyAttributeName.swift */; };
-		84A2A5B122ADE33500A088D5 /* KeyAttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5B022ADE33500A088D5 /* KeyAttributeValue.swift */; };
 		84A2A5B822ADE43900A088D5 /* KeyAttributeValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5B722ADE43900A088D5 /* KeyAttributeValueTests.swift */; };
-		84A2A5BA22ADE8F500A088D5 /* KeyAttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5B922ADE8F500A088D5 /* KeyAttributeSet.swift */; };
 		84A2A5BC22AE011600A088D5 /* KeyAttributeSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5BB22AE011600A088D5 /* KeyAttributeSetTests.swift */; };
-		84A2A5BE22AE11FF00A088D5 /* KeyAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2A5BD22AE11FF00A088D5 /* KeyAttribute.swift */; };
-		8C4053B7822435A569CD8F5A /* Pods_SudoKeyManagerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B17562BC0F7B7CB0C3EBCE91 /* Pods_SudoKeyManagerTests.framework */; };
-		C719511A35AD96BD77639C7D /* Pods_TestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E851039205CBF7D22A3C53 /* Pods_TestApp.framework */; };
-		C89468E3A636F1C31185903C /* Pods_SudoKeyManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE14C12A953EF2B8C4373CBF /* Pods_SudoKeyManager.framework */; };
 		D90C60AC1DCAE56D00BE37A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90C60AB1DCAE56D00BE37A0 /* AppDelegate.swift */; };
 		D90C60AE1DCAE56D00BE37A0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90C60AD1DCAE56D00BE37A0 /* ViewController.swift */; };
 		D90C60B11DCAE56D00BE37A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D90C60AF1DCAE56D00BE37A0 /* Main.storyboard */; };
 		D90C60B31DCAE56D00BE37A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D90C60B21DCAE56D00BE37A0 /* Assets.xcassets */; };
 		D90C60B61DCAE56D00BE37A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D90C60B41DCAE56D00BE37A0 /* LaunchScreen.storyboard */; };
 		D9329E3C2AA81AA000810B52 /* ASN1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9329E3B2AA81AA000810B52 /* ASN1Tests.swift */; };
-		D94695231DC81B0C00967D17 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94695221DC81B0C00967D17 /* MigrationManager.swift */; };
-		D94695261DC81B1E00967D17 /* MigrationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94695251DC81B1E00967D17 /* MigrationOperation.swift */; };
-		D961CD3429A73A8300D9437F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D961CD3329A73A8300D9437F /* String.swift */; };
-		D98091531D35EBD4003D1D0B /* SudoKeyManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D98091521D35EBD4003D1D0B /* SudoKeyManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D980915A1D35EBD4003D1D0B /* SudoKeyManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */; };
 		D98091841D35EC81003D1D0B /* SudoKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98091831D35EC81003D1D0B /* SudoKeyManagerTests.swift */; };
-		D98091871D35EC90003D1D0B /* SudoKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98091861D35EC90003D1D0B /* SudoKeyManager.swift */; };
-		D9939DEA1D64149800DD3202 /* SecureKeyArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DE91D64149800DD3202 /* SecureKeyArchive.swift */; };
-		D9939DED1D64153E00DD3202 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DEC1D64153E00DD3202 /* Logger.swift */; };
-		D9939DF11D64189500DD3202 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DEF1D64189500DD3202 /* Dictionary.swift */; };
-		D9939DF31D64189500DD3202 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DF01D64189500DD3202 /* Data.swift */; };
-		D9939DF71D64193C00DD3202 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DF61D64193C00DD3202 /* Array.swift */; };
 		D9939DFD1D641AB700DD3202 /* SecureKeyArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9939DF91D641AB000DD3202 /* SecureKeyArchiveTests.swift */; };
 		D9A4E0541DCAC0CA000F9960 /* MigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A4E0531DCAC0CA000F9960 /* MigrationTest.swift */; };
-		D9BDF0FD286D25CF00DD38F5 /* DefaultSudoKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BDF0FC286D25CF00DD38F5 /* DefaultSudoKeyManager.swift */; };
-		D9BDF0FF286D310E00DD38F5 /* LegacySudoKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BDF0FE286D310E00DD38F5 /* LegacySudoKeyManager.swift */; };
-		D9DB0C212AA6F56200E783FE /* RSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB0C202AA6F56200E783FE /* RSA.swift */; };
+		E2CAD91D2D36F3DB005E6731 /* SudoKeyManager in Frameworks */ = {isa = PBXBuildFile; productRef = E2CAD91C2D36F3DB005E6731 /* SudoKeyManager */; };
+		E2CAD91F2D36F3E6005E6731 /* SudoKeyManager in Frameworks */ = {isa = PBXBuildFile; productRef = E2CAD91E2D36F3E6005E6731 /* SudoKeyManager */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,29 +30,15 @@
 			remoteGlobalIDString = D90C60A81DCAE56D00BE37A0;
 			remoteInfo = TestApp;
 		};
-		D980915B1D35EBD4003D1D0B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D98091281D35EB61003D1D0B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D980914F1D35EBD4003D1D0B;
-			remoteInfo = SudoKeyManager;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0E26C1FCA833E2F5ACEAE7D5 /* Pods-TestApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestApp.debug.xcconfig"; path = "Target Support Files/Pods-TestApp/Pods-TestApp.debug.xcconfig"; sourceTree = "<group>"; };
-		1EDEB226D55D4FEF58FC41EA /* Pods-SudoKeyManagerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudoKeyManagerTests.release.xcconfig"; path = "Target Support Files/Pods-SudoKeyManagerTests/Pods-SudoKeyManagerTests.release.xcconfig"; sourceTree = "<group>"; };
-		4E257A7DBA2D15AB05BA9D7C /* Pods-SudoKeyManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudoKeyManager.debug.xcconfig"; path = "Target Support Files/Pods-SudoKeyManager/Pods-SudoKeyManager.debug.xcconfig"; sourceTree = "<group>"; };
-		746BD3168452F541D27C2CCE /* Pods-TestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestApp.release.xcconfig"; path = "Target Support Files/Pods-TestApp/Pods-TestApp.release.xcconfig"; sourceTree = "<group>"; };
-		7E46690634C465A009590581 /* Pods-SudoKeyManagerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudoKeyManagerTests.debug.xcconfig"; path = "Target Support Files/Pods-SudoKeyManagerTests/Pods-SudoKeyManagerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		84A2A5AE22ADE23600A088D5 /* KeyAttributeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttributeName.swift; sourceTree = "<group>"; };
 		84A2A5B022ADE33500A088D5 /* KeyAttributeValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttributeValue.swift; sourceTree = "<group>"; };
 		84A2A5B722ADE43900A088D5 /* KeyAttributeValueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttributeValueTests.swift; sourceTree = "<group>"; };
 		84A2A5B922ADE8F500A088D5 /* KeyAttributeSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttributeSet.swift; sourceTree = "<group>"; };
 		84A2A5BB22AE011600A088D5 /* KeyAttributeSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttributeSetTests.swift; sourceTree = "<group>"; };
 		84A2A5BD22AE11FF00A088D5 /* KeyAttribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAttribute.swift; sourceTree = "<group>"; };
-		B17562BC0F7B7CB0C3EBCE91 /* Pods_SudoKeyManagerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SudoKeyManagerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C0485AE27B1B499931885D1B /* Pods-SudoKeyManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudoKeyManager.release.xcconfig"; path = "Target Support Files/Pods-SudoKeyManager/Pods-SudoKeyManager.release.xcconfig"; sourceTree = "<group>"; };
 		D90C60A91DCAE56D00BE37A0 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D90C60AB1DCAE56D00BE37A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D90C60AD1DCAE56D00BE37A0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -84,7 +51,6 @@
 		D94695251DC81B1E00967D17 /* MigrationOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationOperation.swift; sourceTree = "<group>"; };
 		D94B94FE1D597CCA000B76CE /* SudoKeyManager.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = SudoKeyManager.podspec; sourceTree = "<group>"; };
 		D961CD3329A73A8300D9437F /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SudoKeyManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98091521D35EBD4003D1D0B /* SudoKeyManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SudoKeyManager.h; sourceTree = "<group>"; };
 		D98091541D35EBD4003D1D0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D98091591D35EBD4003D1D0B /* SudoKeyManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SudoKeyManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,8 +69,6 @@
 		D9BDF0FE286D310E00DD38F5 /* LegacySudoKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacySudoKeyManager.swift; sourceTree = "<group>"; };
 		D9DB0C202AA6F56200E783FE /* RSA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSA.swift; sourceTree = "<group>"; };
 		D9F21A8C2A524BFE007CB84E /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
-		EE14C12A953EF2B8C4373CBF /* Pods_SudoKeyManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SudoKeyManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1E851039205CBF7D22A3C53 /* Pods_TestApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,15 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C719511A35AD96BD77639C7D /* Pods_TestApp.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D980914C1D35EBD4003D1D0B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C89468E3A636F1C31185903C /* Pods_SudoKeyManager.framework in Frameworks */,
+				E2CAD91F2D36F3E6005E6731 /* SudoKeyManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,8 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D980915A1D35EBD4003D1D0B /* SudoKeyManager.framework in Frameworks */,
-				8C4053B7822435A569CD8F5A /* Pods_SudoKeyManagerTests.framework in Frameworks */,
+				E2CAD91D2D36F3DB005E6731 /* SudoKeyManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,24 +94,8 @@
 		663637808FAE8354011AD5E5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4E257A7DBA2D15AB05BA9D7C /* Pods-SudoKeyManager.debug.xcconfig */,
-				C0485AE27B1B499931885D1B /* Pods-SudoKeyManager.release.xcconfig */,
-				7E46690634C465A009590581 /* Pods-SudoKeyManagerTests.debug.xcconfig */,
-				1EDEB226D55D4FEF58FC41EA /* Pods-SudoKeyManagerTests.release.xcconfig */,
-				0E26C1FCA833E2F5ACEAE7D5 /* Pods-TestApp.debug.xcconfig */,
-				746BD3168452F541D27C2CCE /* Pods-TestApp.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		72EF14A07CDF9FB1B6ADE236 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				EE14C12A953EF2B8C4373CBF /* Pods_SudoKeyManager.framework */,
-				B17562BC0F7B7CB0C3EBCE91 /* Pods_SudoKeyManagerTests.framework */,
-				F1E851039205CBF7D22A3C53 /* Pods_TestApp.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		84A2A5AD22ADE20C00A088D5 /* KeyAttribute */ = {
@@ -214,14 +153,13 @@
 				D90C60AA1DCAE56D00BE37A0 /* TestApp */,
 				D98091321D35EB61003D1D0B /* Products */,
 				663637808FAE8354011AD5E5 /* Pods */,
-				72EF14A07CDF9FB1B6ADE236 /* Frameworks */,
+				E2CAD91B2D36F3DB005E6731 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		D98091321D35EB61003D1D0B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */,
 				D98091591D35EBD4003D1D0B /* SudoKeyManagerTests.xctest */,
 				D90C60A91DCAE56D00BE37A0 /* TestApp.app */,
 			);
@@ -292,29 +230,23 @@
 			name = ASN;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
-
-/* Begin PBXHeadersBuildPhase section */
-		D980914D1D35EBD4003D1D0B /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D98091531D35EBD4003D1D0B /* SudoKeyManager.h in Headers */,
+		E2CAD91B2D36F3DB005E6731 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			name = Frameworks;
+			sourceTree = "<group>";
 		};
-/* End PBXHeadersBuildPhase section */
+/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		D90C60A81DCAE56D00BE37A0 /* TestApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D90C60BA1DCAE56D00BE37A0 /* Build configuration list for PBXNativeTarget "TestApp" */;
 			buildPhases = (
-				B47D9CC08BB674D678EE29D8 /* [CP] Check Pods Manifest.lock */,
 				D90C60A51DCAE56D00BE37A0 /* Sources */,
 				D90C60A61DCAE56D00BE37A0 /* Frameworks */,
 				D90C60A71DCAE56D00BE37A0 /* Resources */,
-				98B4DA9CD337FC8AA1DAE7C4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -325,39 +257,17 @@
 			productReference = D90C60A91DCAE56D00BE37A0 /* TestApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D980914F1D35EBD4003D1D0B /* SudoKeyManager */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D98091611D35EBD4003D1D0B /* Build configuration list for PBXNativeTarget "SudoKeyManager" */;
-			buildPhases = (
-				43E5236128444BD8385B27A5 /* [CP] Check Pods Manifest.lock */,
-				D980914D1D35EBD4003D1D0B /* Headers */,
-				D980914B1D35EBD4003D1D0B /* Sources */,
-				D980914C1D35EBD4003D1D0B /* Frameworks */,
-				D980914E1D35EBD4003D1D0B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SudoKeyManager;
-			productName = SudoKeyManager;
-			productReference = D98091501D35EBD4003D1D0B /* SudoKeyManager.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 		D98091581D35EBD4003D1D0B /* SudoKeyManagerTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D98091641D35EBD4003D1D0B /* Build configuration list for PBXNativeTarget "SudoKeyManagerTests" */;
 			buildPhases = (
-				E8EE7001F731235CEEB96796 /* [CP] Check Pods Manifest.lock */,
 				D98091551D35EBD4003D1D0B /* Sources */,
 				D98091561D35EBD4003D1D0B /* Frameworks */,
 				D98091571D35EBD4003D1D0B /* Resources */,
-				BB6F739A5F70D994753B6FA9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D980915C1D35EBD4003D1D0B /* PBXTargetDependency */,
 				D90C60BC1DCAE59B00BE37A0 /* PBXTargetDependency */,
 			);
 			name = SudoKeyManagerTests;
@@ -385,11 +295,6 @@
 							};
 						};
 					};
-					D980914F1D35EBD4003D1D0B = {
-						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = UU2W43R8JA;
-						LastSwiftMigration = 1020;
-					};
 					D98091581D35EBD4003D1D0B = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1020;
@@ -410,7 +315,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D980914F1D35EBD4003D1D0B /* SudoKeyManager */,
 				D98091581D35EBD4003D1D0B /* SudoKeyManagerTests */,
 				D90C60A81DCAE56D00BE37A0 /* TestApp */,
 			);
@@ -428,13 +332,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D980914E1D35EBD4003D1D0B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D98091571D35EBD4003D1D0B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -444,115 +341,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		43E5236128444BD8385B27A5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SudoKeyManager-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		98B4DA9CD337FC8AA1DAE7C4 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TestApp/Pods-TestApp-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/ASN1Swift/ASN1Swift.framework",
-				"${BUILT_PRODUCTS_DIR}/GzipSwift/Gzip.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ASN1Swift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Gzip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TestApp/Pods-TestApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B47D9CC08BB674D678EE29D8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-TestApp-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BB6F739A5F70D994753B6FA9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SudoKeyManagerTests/Pods-SudoKeyManagerTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/ASN1Swift/ASN1Swift.framework",
-				"${BUILT_PRODUCTS_DIR}/GzipSwift/Gzip.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ASN1Swift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Gzip.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SudoKeyManagerTests/Pods-SudoKeyManagerTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E8EE7001F731235CEEB96796 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SudoKeyManagerTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		D90C60A51DCAE56D00BE37A0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -560,29 +348,6 @@
 			files = (
 				D90C60AE1DCAE56D00BE37A0 /* ViewController.swift in Sources */,
 				D90C60AC1DCAE56D00BE37A0 /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D980914B1D35EBD4003D1D0B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D98091871D35EC90003D1D0B /* SudoKeyManager.swift in Sources */,
-				D9BDF0FD286D25CF00DD38F5 /* DefaultSudoKeyManager.swift in Sources */,
-				D9939DF11D64189500DD3202 /* Dictionary.swift in Sources */,
-				D9939DED1D64153E00DD3202 /* Logger.swift in Sources */,
-				84A2A5AF22ADE23600A088D5 /* KeyAttributeName.swift in Sources */,
-				84A2A5B122ADE33500A088D5 /* KeyAttributeValue.swift in Sources */,
-				D94695261DC81B1E00967D17 /* MigrationOperation.swift in Sources */,
-				84A2A5BE22AE11FF00A088D5 /* KeyAttribute.swift in Sources */,
-				D9DB0C212AA6F56200E783FE /* RSA.swift in Sources */,
-				D9939DF71D64193C00DD3202 /* Array.swift in Sources */,
-				D9939DEA1D64149800DD3202 /* SecureKeyArchive.swift in Sources */,
-				D94695231DC81B0C00967D17 /* MigrationManager.swift in Sources */,
-				D9BDF0FF286D310E00DD38F5 /* LegacySudoKeyManager.swift in Sources */,
-				D961CD3429A73A8300D9437F /* String.swift in Sources */,
-				D9939DF31D64189500DD3202 /* Data.swift in Sources */,
-				84A2A5BA22ADE8F500A088D5 /* KeyAttributeSet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -606,11 +371,6 @@
 			isa = PBXTargetDependency;
 			target = D90C60A81DCAE56D00BE37A0 /* TestApp */;
 			targetProxy = D90C60BB1DCAE59B00BE37A0 /* PBXContainerItemProxy */;
-		};
-		D980915C1D35EBD4003D1D0B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D980914F1D35EBD4003D1D0B /* SudoKeyManager */;
-			targetProxy = D980915B1D35EBD4003D1D0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -636,13 +396,16 @@
 /* Begin XCBuildConfiguration section */
 		D90C60B81DCAE56D00BE37A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0E26C1FCA833E2F5ACEAE7D5 /* Pods-TestApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TestApp/TestApp.entitlements;
 				DEVELOPMENT_TEAM = UU2W43R8JA;
 				INFOPLIST_FILE = TestApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.TestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -650,13 +413,16 @@
 		};
 		D90C60B91DCAE56D00BE37A0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 746BD3168452F541D27C2CCE /* Pods-TestApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TestApp/TestApp.entitlements;
 				DEVELOPMENT_TEAM = UU2W43R8JA;
 				INFOPLIST_FILE = TestApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.TestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -771,7 +537,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -780,53 +547,16 @@
 			};
 			name = Release;
 		};
-		D98091621D35EBD4003D1D0B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E257A7DBA2D15AB05BA9D7C /* Pods-SudoKeyManager.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SudoKeyManager/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.SudoKeyManager;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		D98091631D35EBD4003D1D0B /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0485AE27B1B499931885D1B /* Pods-SudoKeyManager.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SudoKeyManager/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.SudoKeyManager;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-			};
-			name = Release;
-		};
 		D98091651D35EBD4003D1D0B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7E46690634C465A009590581 /* Pods-SudoKeyManagerTests.debug.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = SudoKeyManagerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.SudoKeyManagerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestApp.app/TestApp";
@@ -835,10 +565,14 @@
 		};
 		D98091661D35EBD4003D1D0B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1EDEB226D55D4FEF58FC41EA /* Pods-SudoKeyManagerTests.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = SudoKeyManagerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sudoplatform.SudoKeyManagerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestApp.app/TestApp";
@@ -866,15 +600,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D98091611D35EBD4003D1D0B /* Build configuration list for PBXNativeTarget "SudoKeyManager" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D98091621D35EBD4003D1D0B /* Debug */,
-				D98091631D35EBD4003D1D0B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		D98091641D35EBD4003D1D0B /* Build configuration list for PBXNativeTarget "SudoKeyManagerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -885,6 +610,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E2CAD91C2D36F3DB005E6731 /* SudoKeyManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SudoKeyManager;
+		};
+		E2CAD91E2D36F3E6005E6731 /* SudoKeyManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SudoKeyManager;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D98091281D35EB61003D1D0B /* Project object */;
 }

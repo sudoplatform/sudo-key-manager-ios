@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
+import Foundation
 
 /// Key attribute value types.
 public enum KeyAttributeValue: Hashable {

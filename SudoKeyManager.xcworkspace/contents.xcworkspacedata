@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:SudoKeyManager.xcodeproj">
+      location = "group:">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:SudoKeyManager.xcodeproj">
    </FileRef>
 </Workspace>
