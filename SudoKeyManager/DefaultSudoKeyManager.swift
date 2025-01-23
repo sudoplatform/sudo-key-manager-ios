@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+import ASN1Swift
 import Foundation
 import Security
 import CryptoKit
@@ -126,6 +127,9 @@ final public class DefaultSudoKeyManager {
     /// RSA key size in bits.
     fileprivate var keySizeRSA: Int = Constants.defaultKeySizeRSA
     
+    /// Utility for decoding ASN.1 data structures.
+    fileprivate let asn1Decoder: ASN1Decoder
+
     /// Intializes a new `DefaultSudoKeyManager` instance with the specified service name, namespace and key sizes.
     ///
     /// - Parameters:
@@ -137,13 +141,23 @@ final public class DefaultSudoKeyManager {
     ///   - keySizeAES: AES key size. Default is 256 bits.
     ///   - blockSizeAES: AES block size. Default is 128 bits.
     ///   - keySizeRSA: RSA key size. Default is 2048 bits.
-    public init(serviceName: String, keyTag: String, namespace: String, keySizeAES: Int = Constants.defaultKeySizeAES, blockSizeAES: Int = Constants.defaultBlockSizeAES, keySizeRSA: Int = Constants.defaultKeySizeRSA) {
+    ///   - asn1Decoder: Utility for decoding ASN.1 data structures.
+    public init(
+        serviceName: String,
+        keyTag: String,
+        namespace: String,
+        keySizeAES: Int = Constants.defaultKeySizeAES,
+        blockSizeAES: Int = Constants.defaultBlockSizeAES,
+        keySizeRSA: Int = Constants.defaultKeySizeRSA,
+        asn1Decoder: ASN1Decoder = ASN1Decoder()
+    ) {
         self.namespace = namespace
         self.serviceName = serviceName
         self.keySizeAES = keySizeAES
         self.blockSizeAES = blockSizeAES
         self.keySizeRSA = keySizeRSA
         self.keyTag = keyTag
+        self.asn1Decoder = asn1Decoder
     }
     
     fileprivate func getKeyTypeFromSecAttributes(_ keyAttributes: [String: AnyObject]) -> KeyType {
@@ -1161,10 +1175,28 @@ extension DefaultSudoKeyManager: SudoKeyManager {
         }
     }
 
-    public func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
+    public func encryptWithPublicKey(
+        _ key: Data,
+        data: Data,
+        format: PublicKeyFormat,
+        algorithm: PublicKeyEncryptionAlgorithm
+    ) throws -> Data {
         // Handle base64-encoded key data
-        let decodedKeyData = String(decoding: key, as: UTF8.self)
-        let keyData = Data(base64Encoded: decodedKeyData) ?? key
+        let decodedKeyString = String(decoding: key, as: UTF8.self)
+        let decodedKeyData = Data(base64Encoded: decodedKeyString) ?? key
+        let keyData: Data
+
+        switch format {
+        case .rsaPublicKey:
+            keyData = decodedKeyData
+        case .spki:
+            do {
+                let publicKeyInfo = try asn1Decoder.decode(PublicKeyInfo.self, from: decodedKeyData)
+                keyData = publicKeyInfo.subjectPublicKey
+            } catch {
+                throw SudoKeyManagerError.invalidKey
+            }
+        }
         guard let secKey = SecKeyCreateWithData(keyData as NSData, [
             kSecAttrKeyType: kSecAttrKeyTypeRSA,
             kSecAttrKeyClass: kSecAttrKeyClassPublic

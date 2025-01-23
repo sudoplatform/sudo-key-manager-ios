@@ -50,6 +50,16 @@ public enum PublicKeyEncryptionAlgorithm: Int {
     case rsaEncryptionOAEPSHA1
 }
 
+/// Supported public key formats.
+public enum PublicKeyFormat: String, Equatable {
+
+    /// PKCS#1 RSA Public Key.
+    case rsaPublicKey
+
+    /// X.509 Subject Public Key Info.
+    case spki
+}
+
 /// Protocol encapsulating a set of methods for securely storing keys and performing cryptographic operations.
 public protocol SudoKeyManager {
 
@@ -485,12 +495,14 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.fatalError`
     func encryptWithPublicKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data
 
-    /// Encrypts the given data with the specified public key.
+    /// Encrypts the given data with the specified public key.  The public key data must be in either RSA Public Key (PKCS#1)
+    /// or SPKI format and may optionally be base64 encoded.
     ///
     /// - Parameters:
     ///   - key: Public key data.
     ///   - data: Data to encrypt.
-    ///   - algorithm: Encryption algorithm to use.
+    ///   - format: The format of the public key.  Defaults to `rsaPublicKey`.
+    ///   - algorithm: Encryption algorithm to use.  Defaults to `rsaEncryptionPKCS1`.
     ///
     /// - Returns: Encrypted data.
     ///
@@ -498,14 +510,14 @@ public protocol SudoKeyManager {
     ///     `SudoKeyManagerError.invalidKeyError`,
     ///     `SudoKeyManagerError.unhandledUnderlyingSecAPIError`
     ///     `SudoKeyManagerError.fatalError`
-    func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data
+    func encryptWithPublicKey(_ key: Data, data: Data, format: PublicKeyFormat, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data
 
     /// Decrypts the given data with the specified private key.
     ///
     /// - Parameters:
     ///   - name: Name of the private key to use for decryption.
     ///   - data: Data to decrypt.
-    ///   - algorithm: Decryption algorithm to use.
+    ///   - algorithm: Decryption algorithm to use.  Defaults to `rsaEncryptionPKCS1`.
     ///
     /// - Throws:
     ///     `SudoKeyManagerError.keyNotFound`,
@@ -587,13 +599,18 @@ public protocol SudoKeyManager {
 }
 
 public extension SudoKeyManager {
-    
-    func encryptWithPublicKey(_ name: String, data: Data) throws -> Data {
-        return try encryptWithPublicKey(name, data: data, algorithm: .rsaEncryptionPKCS1)
+
+    func encryptWithPublicKey(_ name: String, data: Data, algorithm: PublicKeyEncryptionAlgorithm = .rsaEncryptionPKCS1) throws -> Data {
+        return try encryptWithPublicKey(name, data: data, algorithm: algorithm)
     }
 
-    func encryptWithPublicKey(_ key: Data, data: Data) throws -> Data {
-        return try encryptWithPublicKey(key, data: data, algorithm: .rsaEncryptionPKCS1)
+    func encryptWithPublicKey(
+        _ key: Data,
+        data: Data,
+        format: PublicKeyFormat = .rsaPublicKey,
+        algorithm: PublicKeyEncryptionAlgorithm = .rsaEncryptionPKCS1
+    ) throws -> Data {
+        return try encryptWithPublicKey(key, data: data, format: format, algorithm: algorithm)
     }
 
     func decryptWithPrivateKey(_ name: String, data: Data) throws -> Data {
