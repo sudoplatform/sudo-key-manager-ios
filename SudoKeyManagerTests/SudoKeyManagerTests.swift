@@ -1780,7 +1780,6 @@ class SudoKeyManagerTests: XCTestCase {
         let keyId = UUID().uuidString
         try keyManager.generateKeyPair(keyId)
         let publicKey = try XCTUnwrap(keyManager.getPublicKey(keyId))
-        let stringData = UUID().uuidString
         let data = try XCTUnwrap(UUID().uuidString.data(using: .utf8))
         let algorithm = PublicKeyEncryptionAlgorithm.rsaEncryptionOAEPSHA1
         // when
@@ -1809,6 +1808,25 @@ class SudoKeyManagerTests: XCTestCase {
             spkiKey,
             data: data,
             format: .spki,
+            algorithm: algorithm
+        )
+        // then
+        let decryptedData = try keyManager.decryptWithPrivateKey(keyId, data: result, algorithm: algorithm)
+        XCTAssertEqual(decryptedData, data)
+    }
+
+    func test_encryptWithPublicKey_withLegacyKeyManager_willSucceed() throws {
+        // given
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+        let publicKey = try XCTUnwrap(keyManager.getPublicKey(keyId))
+        let data = try XCTUnwrap(UUID().uuidString.data(using: .utf8))
+        let algorithm = PublicKeyEncryptionAlgorithm.rsaEncryptionOAEPSHA1
+        // when
+        let result = try legacyKeyManager.encryptWithPublicKey(
+            publicKey,
+            data: data,
+            format: .rsaPublicKey,
             algorithm: algorithm
         )
         // then

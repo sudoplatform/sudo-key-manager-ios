@@ -1194,7 +1194,12 @@ extension LegacySudoKeyManager: SudoKeyManager {
         }
     }
 
-    public func encryptWithPublicKey(_ key: Data, data: Data, algorithm: PublicKeyEncryptionAlgorithm) throws -> Data {
+    public func encryptWithPublicKey(
+        _ key: Data,
+        data: Data,
+        format: PublicKeyFormat,
+        algorithm: PublicKeyEncryptionAlgorithm
+    ) throws -> Data {
         // Handle base64-encoded key data
         let decodedKeyData = String(decoding: key, as: UTF8.self)
         let keyData = Data(base64Encoded: decodedKeyData) ?? key
