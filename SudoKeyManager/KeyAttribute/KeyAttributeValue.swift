@@ -14,6 +14,12 @@ public enum KeyAttributeValue: Hashable {
     case keyTypeValue(KeyType)
 }
 
+public enum AndroidKeyType: String {
+    case privateKey = "PRIVATE_KEY"
+    case publicKey = "PUBLIC_KEY"
+    case symmetricKey = "SYMMETRIC_KEY"
+}
+
 /// Supported key types. Declared as String so that when keys are exported the type is easily recognizable.
 ///
 /// - privateKey: RSA private key.
@@ -30,14 +36,14 @@ public enum KeyType: String {
     
     public init(rawValue: String) {
         // We need to override the default initializer in order to
-        // ensure interoperability with JS SDK since it uses different
-        // casing for key types.
+        // ensure interoperability with JS and Android SDKs since they use different
+        // values for key types.
         switch rawValue.lowercased() {
-        case KeyType.privateKey.rawValue.lowercased():
+        case KeyType.privateKey.rawValue.lowercased(), AndroidKeyType.privateKey.rawValue.lowercased():
             self = .privateKey
-        case KeyType.publicKey.rawValue.lowercased():
+        case KeyType.publicKey.rawValue.lowercased(), AndroidKeyType.publicKey.rawValue.lowercased():
             self = .publicKey
-        case KeyType.symmetricKey.rawValue.lowercased():
+        case KeyType.symmetricKey.rawValue.lowercased(), AndroidKeyType.symmetricKey.rawValue.lowercased():
             self = .symmetricKey
         case KeyType.password.rawValue.lowercased():
             self = .password
@@ -45,5 +51,13 @@ public enum KeyType: String {
             self = .unknown
         }
     }
-    
+
+    static func isV3PrivateKey(rawValue: String) -> Bool {
+        rawValue.lowercased() == KeyType.privateKey.rawValue.lowercased()
+    }
+
+    static func isV3PublicKey(rawValue: String) -> Bool {
+        rawValue.lowercased() == KeyType.publicKey.rawValue.lowercased()
+    }
+
 }

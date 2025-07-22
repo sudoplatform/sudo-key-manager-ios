@@ -408,12 +408,12 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
                         // format of public and private keys since JS SDK uses different
                         // formats.
                         if let type = key[.type] as? String {
-                            if KeyType(rawValue: type) == KeyType.privateKey {
+                            if KeyType.isV3PrivateKey(rawValue: type) {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let rsaPrivateKey = RSAPrivateKey(keyData: data)
                                     key[.data] = rsaPrivateKey.toPrivateKeyInfo().base64EncodedString() as AnyObject
                                 }
-                            } else if KeyType(rawValue: type) == KeyType.publicKey {
+                            } else if KeyType.isV3PublicKey(rawValue: type) {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let rsaPublicKey = RSAPublicKey(keyData: data)
                                     key[.data] = rsaPublicKey.toSubjectPublicKeyInfo().base64EncodedString() as AnyObject
@@ -448,12 +448,12 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
                         // format of public and private keys since JS SDK uses different
                         // formats.
                         if let type = key[.type] as? String {
-                            if KeyType(rawValue: type) == KeyType.privateKey {
+                            if KeyType.isV3PrivateKey(rawValue: type) {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let privateKeyInfo = try asn1Decoder.decode(PrivateKeyInfo.self, from: data)
                                     key[.data] = privateKeyInfo.privateKey.base64EncodedString() as AnyObject
                                 }
-                            } else if KeyType(rawValue: type) == KeyType.publicKey {
+                            } else if KeyType.isV3PublicKey(rawValue: type) {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let publicKeyInfo = try asn1Decoder.decode(PublicKeyInfo.self, from: data)
                                     key[.data] = publicKeyInfo.subjectPublicKey.base64EncodedString() as AnyObject
@@ -626,7 +626,8 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
             var dictionary: [KeyAttributeName: AnyObject] = [:]
             for key in element.keys {
                 guard let newKey = KeyAttributeName(rawValue: key) else {
-                    throw SecureKeyArchiveError.invalidKeyAttribute
+                    logger.log(.warn, message: "Unexpected key attribute name \(key)")
+                    continue
                 }
                 
                 dictionary[newKey] = element[key]
