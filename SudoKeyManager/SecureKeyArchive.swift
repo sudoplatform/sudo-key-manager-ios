@@ -405,15 +405,15 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
                     }
                     if self.zip {
                         // If we are dealing with v3 archive then we need to convert the
-                        // format of public and private keys since JS SDK uses different
+                        // format of public and private keys since JS/Android SDKs uses different
                         // formats.
                         if let type = key[.type] as? String {
-                            if KeyType.isV3PrivateKey(rawValue: type) {
+                            if KeyType(rawValue: type) == KeyType.privateKey {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let rsaPrivateKey = RSAPrivateKey(keyData: data)
                                     key[.data] = rsaPrivateKey.toPrivateKeyInfo().base64EncodedString() as AnyObject
                                 }
-                            } else if KeyType.isV3PublicKey(rawValue: type) {
+                            } else if KeyType(rawValue: type) == KeyType.publicKey {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let rsaPublicKey = RSAPublicKey(keyData: data)
                                     key[.data] = rsaPublicKey.toSubjectPublicKeyInfo().base64EncodedString() as AnyObject
@@ -445,15 +445,15 @@ extension SecureKeyArchiveImpl: SecureKeyArchive {
                 if let name = key[.name] as? String, !self.excludedKeys.contains(name) {
                     if self.zip {
                         // If we are dealing with v3 archive then we need to convert the
-                        // format of public and private keys since JS SDK uses different
+                        // format of public and private keys since JS/Android SDKs uses different
                         // formats.
                         if let type = key[.type] as? String {
-                            if KeyType.isV3PrivateKey(rawValue: type) {
+                            if KeyType(rawValue: type) == KeyType.privateKey {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let privateKeyInfo = try asn1Decoder.decode(PrivateKeyInfo.self, from: data)
                                     key[.data] = privateKeyInfo.privateKey.base64EncodedString() as AnyObject
                                 }
-                            } else if KeyType.isV3PublicKey(rawValue: type) {
+                            } else if KeyType(rawValue: type) == KeyType.publicKey {
                                 if let encodedData = key[.data] as? String, let data = Data(base64Encoded: encodedData) {
                                     let publicKeyInfo = try asn1Decoder.decode(PublicKeyInfo.self, from: data)
                                     key[.data] = publicKeyInfo.subjectPublicKey.base64EncodedString() as AnyObject

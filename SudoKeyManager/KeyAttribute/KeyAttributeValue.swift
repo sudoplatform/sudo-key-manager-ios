@@ -51,13 +51,4 @@ public enum KeyType: String {
             self = .unknown
         }
     }
-
-    static func isV3PrivateKey(rawValue: String) -> Bool {
-        rawValue.lowercased() == KeyType.privateKey.rawValue.lowercased()
-    }
-
-    static func isV3PublicKey(rawValue: String) -> Bool {
-        rawValue.lowercased() == KeyType.publicKey.rawValue.lowercased()
-    }
-
 }
