@@ -1,11 +1,11 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 6.0
 import PackageDescription
 
 let packageName = "SudoKeyManager"
 let package = Package(
     name: packageName,
     platforms: [
-        .iOS(.v15),
+        .iOS(.v18),
     ],
     products: [
         .library(
@@ -22,7 +22,8 @@ let package = Package(
                 .product(name: "Gzip", package: "GzipSwift"),
                 .product(name: "ASN1Swift", package: "ASN1Swift")
             ],
-            path: "SudoKeyManager"
+            path: "SudoKeyManager",
+            swiftSettings: [.swiftLanguageMode(.v5)]
         )
     ]
 )

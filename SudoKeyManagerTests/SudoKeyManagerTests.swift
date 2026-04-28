@@ -5,6 +5,8 @@
 //
 
 import XCTest
+import CryptoKit
+import Security
 import SudoKeyManager
 
 class SudoKeyManagerTests: XCTestCase {
@@ -1832,5 +1834,229 @@ class SudoKeyManagerTests: XCTestCase {
         // then
         let decryptedData = try keyManager.decryptWithPrivateKey(keyId, data: result, algorithm: algorithm)
         XCTAssertEqual(decryptedData, data)
+    }
+
+    // MARK: - Cross-compatibility tests (Security framework interop)
+    //
+    // These tests verify that ciphertext and signatures produced by the
+    // raw Security framework APIs (SecKeyCreateEncryptedData, SecKeyCreateSignature)
+    // can be consumed by the key manager, and vice versa. This ensures binary
+    // compatibility when data is exchanged between devices that may be running
+    // different versions of this library.
+
+    /// Helper: get a SecKey reference for a key stored in the keychain.
+    private func getSecKeyReference(_ name: String, type: KeyType) throws -> SecKey {
+        let keyClass: CFString = (type == .publicKey) ? kSecAttrKeyClassPublic : kSecAttrKeyClassPrivate
+        let prefix = (type == .publicKey) ? "publickey" : "privatekey"
+        let tag = "com.sudoplatform.\(prefix).myapp.\(name)"
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassKey,
+            kSecAttrApplicationTag as String: tag.data(using: .utf8)!,
+            kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass as String: keyClass,
+            kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,
+            kSecReturnRef as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess else {
+            throw SudoKeyManagerError.keyNotFound
+        }
+        return result as! SecKey
+    }
+
+    // MARK: Encryption interop — PKCS1
+
+    func test_crossCompat_rawSecKeyEncryptedData_canBeDecryptedByKeyManager_PKCS1() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let publicSecKey = try getSecKeyReference(keyId, type: .publicKey)
+        let plaintext = "cross-compat plaintext PKCS1".data(using: .utf8)!
+
+        // Encrypt directly with Security framework
+        var error: Unmanaged<CFError>?
+        let ciphertext = SecKeyCreateEncryptedData(publicSecKey, .rsaEncryptionPKCS1, plaintext as CFData, &error)
+        XCTAssertNotNil(ciphertext, "SecKeyCreateEncryptedData failed: \(String(describing: error?.takeRetainedValue()))")
+
+        // Decrypt with key manager
+        let decrypted = try keyManager.decryptWithPrivateKey(keyId, data: ciphertext! as Data, algorithm: .rsaEncryptionPKCS1)
+        XCTAssertEqual(decrypted, plaintext)
+    }
+
+    func test_crossCompat_keyManagerEncryptedData_canBeDecryptedByRawSecKey_PKCS1() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let plaintext = "cross-compat plaintext PKCS1 reverse".data(using: .utf8)!
+
+        // Encrypt with key manager
+        let ciphertext = try keyManager.encryptWithPublicKey(keyId, data: plaintext, algorithm: .rsaEncryptionPKCS1)
+
+        // Decrypt directly with Security framework
+        let privateSecKey = try getSecKeyReference(keyId, type: .privateKey)
+        var error: Unmanaged<CFError>?
+        let decrypted = SecKeyCreateDecryptedData(privateSecKey, .rsaEncryptionPKCS1, ciphertext as CFData, &error)
+        XCTAssertNotNil(decrypted, "SecKeyCreateDecryptedData failed: \(String(describing: error?.takeRetainedValue()))")
+        XCTAssertEqual(decrypted! as Data, plaintext)
+    }
+
+    // MARK: Encryption interop — OAEP SHA1
+
+    func test_crossCompat_rawSecKeyEncryptedData_canBeDecryptedByKeyManager_OAEP() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let publicSecKey = try getSecKeyReference(keyId, type: .publicKey)
+        let plaintext = "cross-compat plaintext OAEP".data(using: .utf8)!
+
+        var error: Unmanaged<CFError>?
+        let ciphertext = SecKeyCreateEncryptedData(publicSecKey, .rsaEncryptionOAEPSHA1, plaintext as CFData, &error)
+        XCTAssertNotNil(ciphertext, "SecKeyCreateEncryptedData failed: \(String(describing: error?.takeRetainedValue()))")
+
+        let decrypted = try keyManager.decryptWithPrivateKey(keyId, data: ciphertext! as Data, algorithm: .rsaEncryptionOAEPSHA1)
+        XCTAssertEqual(decrypted, plaintext)
+    }
+
+    func test_crossCompat_keyManagerEncryptedData_canBeDecryptedByRawSecKey_OAEP() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let plaintext = "cross-compat plaintext OAEP reverse".data(using: .utf8)!
+
+        let ciphertext = try keyManager.encryptWithPublicKey(keyId, data: plaintext, algorithm: .rsaEncryptionOAEPSHA1)
+
+        let privateSecKey = try getSecKeyReference(keyId, type: .privateKey)
+        var error: Unmanaged<CFError>?
+        let decrypted = SecKeyCreateDecryptedData(privateSecKey, .rsaEncryptionOAEPSHA1, ciphertext as CFData, &error)
+        XCTAssertNotNil(decrypted, "SecKeyCreateDecryptedData failed: \(String(describing: error?.takeRetainedValue()))")
+        XCTAssertEqual(decrypted! as Data, plaintext)
+    }
+
+    // MARK: Signature interop
+
+    func test_crossCompat_rawSecKeySignature_canBeVerifiedByKeyManager() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let privateSecKey = try getSecKeyReference(keyId, type: .privateKey)
+        let data = "cross-compat signature data".data(using: .utf8)!
+        let hash = Data(SHA256.hash(data: data))
+
+        // Sign directly with Security framework
+        var error: Unmanaged<CFError>?
+        let signature = SecKeyCreateSignature(privateSecKey, .rsaSignatureDigestPKCS1v15SHA256, hash as CFData, &error)
+        XCTAssertNotNil(signature, "SecKeyCreateSignature failed: \(String(describing: error?.takeRetainedValue()))")
+
+        // Verify with key manager
+        let valid = try keyManager.verifySignatureWithPublicKey(keyId, data: data, signature: signature! as Data)
+        XCTAssertTrue(valid)
+    }
+
+    func test_crossCompat_keyManagerSignature_canBeVerifiedByRawSecKey() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let data = "cross-compat signature data reverse".data(using: .utf8)!
+
+        // Sign with key manager
+        let signature = try keyManager.generateSignatureWithPrivateKey(keyId, data: data)
+
+        // Verify directly with Security framework
+        let publicSecKey = try getSecKeyReference(keyId, type: .publicKey)
+        let hash = Data(SHA256.hash(data: data))
+        var error: Unmanaged<CFError>?
+        let valid = SecKeyVerifySignature(publicSecKey, .rsaSignatureDigestPKCS1v15SHA256, hash as CFData, signature as CFData, &error)
+        XCTAssertTrue(valid, "SecKeyVerifySignature failed: \(String(describing: error?.takeRetainedValue()))")
+    }
+
+    // MARK: Multi-block encryption interop
+
+    func test_crossCompat_keyManagerMultiBlockEncrypt_canBeDecryptedBlockByBlock_PKCS1() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        // Create plaintext larger than one RSA block (>245 bytes for 2048-bit key)
+        let plaintext = String(repeating: "A", count: 500).data(using: .utf8)!
+
+        // Encrypt with key manager (multi-block)
+        let ciphertext = try keyManager.encryptWithPublicKey(keyId, data: plaintext, algorithm: .rsaEncryptionPKCS1)
+
+        // Decrypt block-by-block directly with Security framework
+        let privateSecKey = try getSecKeyReference(keyId, type: .privateKey)
+        guard let attributes = SecKeyCopyAttributes(privateSecKey) as? [String: Any],
+              let keySizeInBits = attributes[kSecAttrKeySizeInBits as String] as? Int else {
+            return XCTFail("Could not read key attributes")
+        }
+        let blockSize = keySizeInBits / 8
+
+        XCTAssertEqual(ciphertext.count % blockSize, 0, "Ciphertext should be block-aligned")
+
+        var decrypted = Data()
+        var offset = 0
+        while offset < ciphertext.count {
+            let chunk = ciphertext[offset..<offset + blockSize]
+            var error: Unmanaged<CFError>?
+            guard let plainChunk = SecKeyCreateDecryptedData(privateSecKey, .rsaEncryptionPKCS1, chunk as CFData, &error) else {
+                return XCTFail("SecKeyCreateDecryptedData failed at offset \(offset): \(String(describing: error?.takeRetainedValue()))")
+            }
+            decrypted.append(plainChunk as Data)
+            offset += blockSize
+        }
+
+        XCTAssertEqual(decrypted, plaintext)
+    }
+
+    // MARK: Legacy key manager interop
+
+    func test_crossCompat_legacyEncrypt_defaultDecrypt_PKCS1() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let plaintext = "legacy-to-default interop".data(using: .utf8)!
+
+        // Encrypt with legacy manager
+        let ciphertext = try legacyKeyManager.encryptWithPublicKey(keyId, data: plaintext, algorithm: .rsaEncryptionPKCS1)
+
+        // Decrypt with default manager
+        let decrypted = try keyManager.decryptWithPrivateKey(keyId, data: ciphertext, algorithm: .rsaEncryptionPKCS1)
+        XCTAssertEqual(decrypted, plaintext)
+    }
+
+    func test_crossCompat_defaultEncrypt_legacyDecrypt_PKCS1() throws {
+        let keyId = UUID().uuidString
+        try legacyKeyManager.generateKeyPair(keyId)
+
+        let plaintext = "default-to-legacy interop".data(using: .utf8)!
+
+        // Encrypt with default manager
+        let ciphertext = try keyManager.encryptWithPublicKey(keyId, data: plaintext, algorithm: .rsaEncryptionPKCS1)
+
+        // Decrypt with legacy manager
+        let decrypted = try legacyKeyManager.decryptWithPrivateKey(keyId, data: ciphertext, algorithm: .rsaEncryptionPKCS1)
+        XCTAssertEqual(decrypted, plaintext)
+    }
+
+    func test_crossCompat_legacySign_defaultVerify() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let data = "legacy-to-default signature".data(using: .utf8)!
+
+        let signature = try legacyKeyManager.generateSignatureWithPrivateKey(keyId, data: data)
+        let valid = try keyManager.verifySignatureWithPublicKey(keyId, data: data, signature: signature)
+        XCTAssertTrue(valid)
+    }
+
+    func test_crossCompat_defaultSign_legacyVerify() throws {
+        let keyId = UUID().uuidString
+        try keyManager.generateKeyPair(keyId)
+
+        let data = "default-to-legacy signature".data(using: .utf8)!
+
+        let signature = try keyManager.generateSignatureWithPrivateKey(keyId, data: data)
+        let valid = try legacyKeyManager.verifySignatureWithPublicKey(keyId, data: data, signature: signature)
+        XCTAssertTrue(valid)
     }
 }
